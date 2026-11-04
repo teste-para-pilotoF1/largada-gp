@@ -1,5 +1,5 @@
 // Seletiva de pilotos da equipe dos seguidores.
-// GET  /api/ranking           -> { top: [{ insta, ms }], fim }   (as 20 melhores médias)
+// GET  /api/ranking           -> { top: [{ insta, ms }], fim }   (as 100 melhores médias)
 // GET  /api/ranking?rodada=1  -> { rodada }                      (vale de rodada assinado, pedido ao começar)
 // POST /api/ranking  { insta, tempos: [5 números em ms], rodada } -> { ms, melhor, posicao, top }
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -10,7 +10,7 @@ import { configurado, emMemoria, podeEnviar, salvar, SEGREDO, top, usarRodada } 
 const POSTADO = process.env.SELETIVA_POSTADO || "2026-11-04T10:05";
 const HORAS_ABERTA = 24;
 
-const TOP = 20;
+const TOP = 100; // ~3 KB de resposta, 1 comando no banco (igual ao de 20)
 const LARGADAS = 5;
 const PENALIDADE = 1000; // largada queimada vale 1 s
 const MINIMO = 100; // abaixo disso ninguém reage, chutou

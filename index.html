@@ -152,8 +152,8 @@
   .g-msg { font-size: 14px; color: var(--card-apagado); margin: 0; line-height: 1.35; }
   .g-msg:empty { display: none; }
   .g-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: pos; }
-  .g-lista li { counter-increment: pos; display: grid; grid-template-columns: 2.1em minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; }
-  .g-lista li::before { content: counter(pos) "º"; font-weight: 900; color: var(--card-apagado); font-variant-numeric: tabular-nums; }
+  .g-lista li { counter-increment: pos; display: grid; grid-template-columns: 2.5em minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; }
+  .g-lista li::before { content: counter(pos) "º"; font-size: 14px; font-weight: 900; color: var(--card-apagado); font-variant-numeric: tabular-nums; }
   .g-lista li.vaga { background: #fff4f4; }
   .g-lista li.vaga::before { color: var(--vermelho); }
   .g-lista li.teste { background: #f1f4ff; }
