@@ -7,7 +7,8 @@ import { fileURLToPath } from "node:url";
 import * as ranking from "./api/ranking.js";
 import * as evento from "./api/evento.js";
 import * as numeros from "./api/numeros.js";
-const rotas = { "/api/ranking": ranking, "/api/evento": evento, "/api/numeros": numeros };
+import * as suspeitos from "./api/suspeitos.js";
+const rotas = { "/api/ranking": ranking, "/api/evento": evento, "/api/numeros": numeros, "/api/suspeitos": suspeitos };
 
 const raiz = fileURLToPath(new URL(".", import.meta.url));
 const tipos = { ".html": "text/html; charset=utf-8", ".svg": "image/svg+xml", ".js": "text/javascript", ".png": "image/png" };
