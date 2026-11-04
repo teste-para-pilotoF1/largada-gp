@@ -55,6 +55,13 @@ export async function salvar(insta, ms) {
   return { posicao: Number(pos) + 1, melhor: Number(melhor) };
 }
 
+// tira @ do grid (ZREM não faz nada se o @ já saiu)
+export async function remover(instas) {
+  if (!instas.length) return;
+  if (emMemoria) { for (const i of instas) mem.placar.delete(i); return; }
+  await pipeline([["ZREM", CHAVE, ...instas]]);
+}
+
 // cada rodada assinada só pode ser salva uma vez
 export async function usarRodada(assinatura) {
   if (emMemoria) {
