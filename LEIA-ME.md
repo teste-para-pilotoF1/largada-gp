@@ -1,24 +1,37 @@
-# Largada GP
+# Seletiva de pilotos (equipe dos seguidores)
 
-Teste de reflexo da largada da F1, 100% em português, com a cara dos vídeos de F1
-(noite azul-marinho, low-poly, zebra, legenda "linha apagada + palavra forte", tags em pílula, cards brancos).
+No ar: https://teste-para-piloto.vercel.app/ · código: https://github.com/teste-para-pilotoF1/largada-gp
+(cada `git push` na `main` publica sozinho na Vercel).
 
-Engenharia reversa de https://lightsout-gp.vercel.app/ (de @formulaafondo, crédito mantido na tela inicial).
-A lógica de tempo é a mesma do original: 5 colunas acendem, uma por segundo, e apagam depois de uma espera
-sorteada de 0,2 a 3 s. O tempo vem do `event.timeStamp` do toque menos o carimbo do `requestAnimationFrame`
-do quadro escuro. Abaixo de 100 ms ou com luz acesa = largada queimada (vale 1 s na média).
+Teste de reflexo da série "equipe dos seguidores". O link sai no fim do ep. 2: "o Rui foi buscar a roda e não voltou",
+a vaga está aberta, e quem estiver no topo do grid quando a seletiva fechar vira **Piloto 1**, **Piloto 2** e
+**pilotos de teste** (3º ao 5º).
+
+Visual: a garagem da Sede 01 (parede de tábuas, porta de enrolar, mural de cortiça), 5 lâmpadas penduradas no lugar
+do pórtico da F1, o kart enferrujado do ep. 1 apoiado num tijolo sem a roda da frente, bonecos low-poly de macacão
+vermelho e branco, legenda "linha apagada + palavra forte". O resultado é uma "ficha do candidato" com a função que
+o tempo daria na equipe (Piloto, Piloto de teste, Mecânico, Equipe de pneus, Buscar a roda) e um card de story 1080×1920.
+
+A lógica de tempo veio da engenharia reversa do Lights Out GP (@formulaafondo, crédito na tela inicial): 5 luzes, uma
+por segundo, espera sorteada de 0,2 a 3 s, tempo = `event.timeStamp` do toque − carimbo do `requestAnimationFrame`
+do quadro escuro. Abaixo de 100 ms ou com luz acesa = largada queimada (vale 1 s).
+
+## Ajustes rápidos
+- `index.html`, topo do `<script>`: `EQUIPE` (nome da equipe), `PERFIL` (seu @ no card de story), `PILOTOS_TESTE`.
+- `api/ranking.js`: `FIM` = data e hora em que a seletiva fecha, horário de Brasília, ex. `"2026-11-15T20:00"`
+  (ou a variável de ambiente `SELETIVA_FIM` na Vercel). Depois do horário o grid para de aceitar entradas.
+
+## Como o grid se protege
+- Ao começar a rodada o site pede um "vale" assinado ao servidor; o grid só aceita a rodada com esse vale, uma vez só,
+  e só se passou o tempo mínimo das luzes (5 s por largada não queimada) e no máximo 2 horas.
+- Cada @ guarda só a melhor média; 8 envios por minuto por IP.
+- Isso barra quem tenta mandar tempo direto pela API, mas não um robô feito sob medida: antes de anunciar,
+  vale pedir aos primeiros um vídeo da tela fazendo o teste (a regra já está escrita no site).
 
 ## Arquivos
-- `index.html` — o jogo inteiro (HTML + CSS + JS, sem build). No topo do `<script>`, `PERFIL` põe seu @ no card de compartilhar.
-- `api/ranking.js` — função da Vercel: `GET` devolve o top 20, `POST` salva `{ apelido, tempos }` (valida, calcula a média no servidor, guarda só a melhor de cada apelido, limita 8 envios/min por IP).
-- `api/_banco.js` — Upstash Redis pela API REST (sem dependências). Fora da Vercel e sem variáveis, usa memória (só para teste).
+- `index.html` — o jogo inteiro (HTML + CSS + JS, sem build).
+- `api/ranking.js` — função da Vercel: `GET` (grid + data de fim), `GET ?rodada=1` (vale), `POST` (entrar no grid).
+- `api/_banco.js` — Upstash Redis pela API REST (sem dependências); chave `seletiva:placar`. Sem variáveis e fora da Vercel, usa memória.
 - `dev.mjs` — servidor local: `node dev.mjs` → http://localhost:3005
 
-## Publicar (plano grátis)
-1. Suba esta pasta para a Vercel (repositório no GitHub + "Add New → Project", ou `npx vercel` dentro da pasta).
-   Framework: **Other**, sem build. O site já funciona; só o ranking fica "indisponível".
-2. Ranking: no projeto da Vercel → **Storage → Create Database → Upstash for Redis** (plano Free) → conectar ao projeto.
-   Isso cria as variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_*`), que o código já lê.
-3. **Redeploy** para a função enxergar as variáveis.
-
-Plano free do Upstash: 500 mil comandos/mês; cada partida salva gasta ~5 comandos e cada abertura do ranking ~2.
+Banco: Upstash for Redis (plano Free) ligado pelo painel da Vercel (Storage). Variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN`.

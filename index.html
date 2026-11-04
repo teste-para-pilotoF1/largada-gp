@@ -2,24 +2,25 @@
 <html lang="pt-BR">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Largada GP: você reage como piloto de F1?</title>
-<meta name="description" content="Cinco largadas de F1. Toque quando as luzes apagarem e descubra se você tem reflexo de piloto.">
+<title>Seletiva de pilotos: a vaga está aberta</title>
+<meta name="description" content="O Rui foi buscar a roda e não voltou. Faça o teste de reflexo e dispute a vaga de piloto da equipe dos seguidores.">
 <meta name="theme-color" content="#070b1d">
-<meta property="og:title" content="Largada GP: você reage como piloto de F1?">
-<meta property="og:description" content="Cinco luzes vermelhas. Apagou, toca. Qual é a sua média?">
+<meta property="og:title" content="Seletiva de pilotos: a vaga está aberta">
+<meta property="og:description" content="As lâmpadas da garagem apagaram? Toca! Os mais rápidos viram os pilotos da equipe.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
 <style>
-  /* Mesma cara dos vídeos de F1: noite azul-marinho, low-poly, zebra vermelha e branca,
-     legenda com linha apagada + palavra forte, tags em pílula e cards brancos. */
+  /* Visual da série da equipe dos seguidores: Sede 01 (garagem velha à noite), bonecos low-poly
+     de macacão vermelho e branco, legenda "linha apagada + palavra forte", tags em pílula. */
   :root {
     --noite: #070b1d; --noite2: #0d1030; --noite3: #16224d;
-    --ink: #ffffff; --apagado: rgba(255,255,255,.45); --linha: rgba(255,255,255,.14);
-    --vermelho: #d7191f; --vermelho-vivo: #ff3b45; --amarelo: #ffd400;
-    --roxo: #a970ff; --verde: #3ddc84; --queimou: #ff3b45;
-    --portico: #1b1b22; --lampada: #2a2f45; --acesa: #ff2a2a;
+    --ink: #ffffff; --apagado: rgba(255,255,255,.5); --linha: rgba(255,255,255,.14);
+    --vermelho: #d7191f; --vermelho-escuro: #8f0f14; --amarelo: #ffd84d;
+    --roxo: #b388ff; --verde: #3ddc84; --queimou: #ff4d55;
+    --parede: #3c3a41; --tabua: #55525a; --chao: #2a2730; --cortica: #b57a45;
+    --lampada: #5a5660; --acesa: #ff3b30;
     --card: #ffffff; --card-ink: #1b1b22; --card-apagado: #6b6f7a; --card-linha: #e2e4ea;
     --sombra: 0 6px 22px rgba(0,0,0,.45);
     --fonte: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -28,223 +29,239 @@
   [hidden] { display: none !important; }
   html, body { height: 100%; margin: 0; }
   body {
-    background: radial-gradient(120% 80% at 50% 0%, var(--noite3) 0%, var(--noite2) 45%, var(--noite) 100%) fixed;
+    background: radial-gradient(120% 70% at 50% 0%, var(--noite3) 0%, var(--noite2) 45%, var(--noite) 100%) fixed;
     color: var(--ink); font-family: var(--fonte); font-weight: 700;
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-left: max(14px, env(safe-area-inset-left, 0px));
+    padding-right: max(14px, env(safe-area-inset-right, 0px));
     box-sizing: border-box; overflow: hidden;
     user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
   }
-  /* triângulos low-poly ao fundo */
-  .poly { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
   button { font: inherit; color: inherit; cursor: pointer; }
   button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--amarelo); outline-offset: 2px; }
 
-  #app { height: 100%; height: 100dvh; max-width: 620px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 12px; padding-block: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-bottom, 0px)); box-sizing: border-box; }
+  #app { height: 100%; height: 100dvh; max-width: 560px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 10px; padding-block: max(12px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-bottom, 0px)); box-sizing: border-box; }
 
   /* ---------- topo ---------- */
-  .zebra { height: 10px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--vermelho) 0 22px, #f4f4f4 22px 44px); }
-  header { display: grid; gap: 10px; }
-  .linha-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--vermelho); color: #fff; font-weight: 900; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; padding: 5px 11px; border-radius: 8px; box-shadow: var(--sombra); }
+  header { display: grid; gap: 8px; }
+  .linha-topo { display: flex; align-items: center; gap: 8px; }
+  .linha-topo .chip { margin-left: auto; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--vermelho); color: #fff; font-weight: 900; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; padding: 5px 10px; border-radius: 8px; box-shadow: var(--sombra); white-space: nowrap; }
   .tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .tag.amarela { background: #ffd400; color: #1b1b22; }
-  .chip { border: 1px solid var(--linha); background: rgba(255,255,255,.06); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
+  .tag.amarela { background: #ffd84d; color: #1b1b22; }
+  .tag.azul { background: #24346b; }
+  .chip { border: 1px solid var(--linha); background: rgba(255,255,255,.06); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 800; }
   h1 { margin: 0; text-align: center; line-height: 1.08; font-weight: 800; }
-  h1 .antes { display: block; font-size: clamp(16px, 4.4vw, 22px); color: var(--apagado); }
-  h1 .forte { display: block; font-size: clamp(28px, 8.2vw, 44px); text-shadow: var(--sombra); }
+  h1 .antes { display: block; font-size: clamp(14px, 4vw, 19px); color: var(--apagado); }
+  h1 .forte { display: block; font-size: clamp(30px, 9vw, 46px); text-shadow: var(--sombra); }
   .pips { display: flex; gap: 4px; align-items: center; }
   .pip { flex: 1; height: 6px; background: var(--linha); border-radius: 3px; }
-  .pip.agora { background: var(--vermelho-vivo); }
+  .pip.agora { background: var(--queimou); }
   .pip[data-faixa="roxo"] { background: var(--roxo); }
   .pip[data-faixa="verde"] { background: var(--verde); }
   .pip[data-faixa="amarelo"] { background: var(--amarelo); }
   .pip[data-faixa="queimou"] { background: #f4f4f4; }
-  .contador { font-weight: 900; font-size: 14px; font-variant-numeric: tabular-nums; margin-left: 8px; color: var(--apagado); white-space: nowrap; }
+  .contador { font-weight: 900; font-size: 13px; font-variant-numeric: tabular-nums; margin-left: 8px; color: var(--apagado); white-space: nowrap; }
 
-  /* ---------- palco: a área toda é o botão ---------- */
+  /* ---------- palco: a garagem da Sede 01; a área toda é o botão ---------- */
   #palco {
-    border-radius: 18px; min-height: 0; position: relative; overflow: hidden;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
-    padding: 20px 14px; touch-action: manipulation; cursor: pointer;
-    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 60%);
-    border: 1px solid var(--linha);
+    border-radius: 18px; min-height: 0; position: relative; overflow: hidden; isolation: isolate;
+    display: grid; grid-template-rows: auto 1fr auto; justify-items: center;
+    touch-action: manipulation; cursor: pointer; box-shadow: var(--sombra);
+    background:
+      linear-gradient(180deg, transparent 0 74%, var(--chao) 74% 100%),
+      repeating-linear-gradient(180deg, var(--parede) 0 26px, var(--tabua) 26px 29px);
   }
-  .portico { position: relative; display: flex; gap: 8px; width: 100%; max-width: 440px; }
-  .portico::before { content: ""; position: absolute; left: -10px; right: -10px; top: -14px; height: 12px; border-radius: 3px; background: var(--portico); box-shadow: var(--sombra); }
-  .col { position: relative; flex: 1; background: var(--portico); border-radius: 12px; padding: 6px; display: grid; gap: 6px; box-shadow: var(--sombra); }
-  .lamp { aspect-ratio: 1; border-radius: 50%; background: var(--lampada); box-shadow: inset 0 3px 6px rgba(0,0,0,.5); transition: background .04s, box-shadow .04s; }
-  /* as duas fileiras de baixo são as luzes da largada */
-  .col.acesa .lamp:nth-child(n+3) { background: radial-gradient(circle at 40% 35%, #ff8a8a 0 18%, var(--acesa) 45%); box-shadow: 0 0 18px 4px rgba(255,40,40,.6); }
-  #palco.acesas { background: radial-gradient(70% 55% at 50% 35%, rgba(255,40,40,.16), transparent 70%); }
+  /* porta de enrolar à esquerda e mural de cortiça à direita, como na garagem do ep. 1 */
+  #palco::before { content: ""; position: absolute; z-index: -1; left: -6%; top: 22%; width: 38%; height: 52%; background: repeating-linear-gradient(180deg, #5d5a62 0 13px, #4a474f 13px 16px); border-radius: 0 6px 0 0; opacity: .8; }
+  #palco::after { content: ""; position: absolute; z-index: -1; right: 6%; top: 30%; width: 24%; height: 26%; background: var(--cortica); border-radius: 4px; box-shadow: inset 0 0 0 5px #8f5c31; opacity: .85; }
+  .papel { position: absolute; z-index: 0; right: 9%; top: 33%; width: 18%; letter-spacing: -.02em; aspect-ratio: 3 / 4; background: #f4efe1; transform: rotate(4deg); color: #1b1b22; font-size: clamp(6px, 1.7vw, 9px); font-weight: 900; text-align: center; line-height: 1.1; padding: 4px 2px; box-sizing: border-box; display: grid; place-items: center; }
+  .papel b { color: var(--vermelho); display: block; font-size: 1.2em; }
+  #palco.acesas { box-shadow: var(--sombra), inset 0 0 120px rgba(255,40,30,.22); }
 
-  .cronometro { display: inline-flex; align-items: center; gap: 12px; background: rgba(10,14,32,.85); border: 3px solid #fff; border-radius: 18px; padding: 6px 22px 8px; box-shadow: var(--sombra); }
-  .cronometro svg { width: clamp(30px, 8vw, 46px); height: auto; flex: none; }
-  .tempo { font-weight: 900; font-size: clamp(48px, 15vw, 88px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .lampadas { display: flex; justify-content: space-around; width: 100%; padding: 0 4%; box-sizing: border-box; position: relative; }
+  .lampada { position: relative; width: 17%; display: grid; justify-items: center; }
+  .fio { width: 3px; height: clamp(16px, 5vh, 40px); background: #15151b; }
+  .lampada svg { width: 100%; height: auto; display: block; margin-top: -1px; overflow: visible; }
+  .lampada .bulbo { fill: var(--lampada); }
+  .lampada .brilho { opacity: 0; }
+  .lampada.acesa .bulbo { fill: var(--acesa); }
+  .lampada.acesa .brilho { opacity: 1; }
+  .cone { position: absolute; z-index: -1; top: 92%; left: 50%; width: 260%; height: 60vh; transform: translateX(-50%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, rgba(255,70,50,.38), rgba(255,70,50,0) 70%); opacity: 0; pointer-events: none; }
+  .lampada.acesa .cone { opacity: 1; }
+
+  .meio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 8px 14px; }
+  .cronometro { display: inline-flex; align-items: center; gap: 10px; background: rgba(10,14,32,.88); border: 3px solid #fff; border-radius: 18px; padding: 5px 20px 7px; box-shadow: var(--sombra); }
+  .cronometro svg { width: clamp(28px, 7vw, 40px); height: auto; flex: none; }
+  .tempo { font-weight: 900; font-size: clamp(44px, 13vw, 78px); line-height: 1; font-variant-numeric: tabular-nums; }
   .tempo small { font-size: .42em; opacity: .7; margin-left: 4px; }
   .tempo[data-faixa="roxo"] { color: var(--roxo); }
   .tempo[data-faixa="verde"] { color: var(--verde); }
   .tempo[data-faixa="amarelo"] { color: var(--amarelo); }
-  .tempo[data-faixa="queimou"] { color: var(--queimou); font-size: clamp(36px, 11vw, 64px); }
+  .tempo[data-faixa="queimou"] { color: var(--queimou); font-size: clamp(34px, 10vw, 58px); }
   .cronometro.pop { animation: pop .16s cubic-bezier(.23, 1, .32, 1); }
   @keyframes pop { from { transform: scale(1.35); } }
   @media (prefers-reduced-motion: reduce) { .cronometro.pop { animation: none; } }
+  .status { text-align: center; min-height: 3em; max-width: 28ch; line-height: 1.1; font-weight: 800; margin: 0; }
+  .status .antes { display: block; font-size: 16px; color: rgba(255,255,255,.62); min-height: 1.2em; }
+  .status .forte { display: block; font-size: 28px; text-shadow: 0 4px 14px rgba(0,0,0,.6); }
 
-  /* status no formato da legenda dos vídeos */
-  .status { text-align: center; min-height: 3.2em; max-width: 30ch; line-height: 1.12; font-weight: 800; }
-  .status .antes { display: block; font-size: 17px; color: var(--apagado); min-height: 1.2em; }
-  .status .forte { display: block; font-size: 30px; text-shadow: var(--sombra); }
+  .kart { width: min(78%, 330px); height: auto; display: block; margin-bottom: 3%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
 
-  /* ---------- cards brancos (resultado, ranking, intro) ---------- */
-  .card { background: var(--card); color: var(--card-ink); border-radius: 22px; box-shadow: var(--sombra); --roxo: #7b2ff7; --verde: #0fa968; --amarelo: #e0a800; --queimou: var(--vermelho); }
+  /* ---------- cards brancos ---------- */
+  .card { background: var(--card); color: var(--card-ink); border-radius: 22px; box-shadow: var(--sombra); --roxo: #7b2ff7; --verde: #0fa968; --amarelo: #c99a00; --queimou: var(--vermelho); }
   .rotulo { font-weight: 900; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--vermelho); }
 
-  #resultado { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: 14px; padding: 14px; cursor: default; overflow-y: auto; background: rgba(7,11,29,.82); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-  #resultado > .card { padding: 20px 20px 22px; display: grid; gap: 12px; margin-top: auto; }
-  #resultado > .card:last-child { margin-bottom: auto; margin-top: 0; }
-  .media { font-weight: 900; font-size: clamp(56px, 17vw, 88px); line-height: .9; font-variant-numeric: tabular-nums; }
+  #resultado { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; gap: 12px; padding: 12px; cursor: default; overflow-y: auto; background: rgba(7,11,29,.86); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .ficha { padding: 18px 18px 20px; display: grid; gap: 12px; }
+  .ficha-topo { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center; }
+  .ficha-topo .avatar { width: 92px; height: auto; background: #eef0f6; border-radius: 18px; display: block; }
+  .ficha .seria { font-size: 13px; color: var(--card-apagado); font-weight: 800; }
+  .funcao { justify-self: start; font-size: clamp(18px, 5.4vw, 24px); text-transform: none; letter-spacing: 0; padding: 6px 12px; margin: 3px 0 6px; }
+  .media { font-weight: 900; font-size: clamp(44px, 13vw, 64px); line-height: .9; font-variant-numeric: tabular-nums; }
   .media small { font-size: .38em; opacity: .55; margin-left: 4px; }
-  .veredito { justify-self: start; font-size: clamp(17px, 4.6vw, 22px); text-transform: none; letter-spacing: 0; padding: 6px 12px; }
   .nota { font-size: 14px; color: var(--card-apagado); line-height: 1.4; margin: 0; font-weight: 700; }
   .voltas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-  .volta { border: 2px solid var(--card-linha); border-radius: 12px; padding: 8px 2px 7px; text-align: center; font-weight: 900; font-size: clamp(14px, 4.2vw, 18px); font-variant-numeric: tabular-nums; }
+  .volta { border: 2px solid var(--card-linha); border-radius: 12px; padding: 7px 2px 6px; text-align: center; font-weight: 900; font-size: clamp(13px, 4vw, 17px); font-variant-numeric: tabular-nums; }
   .volta span { display: block; font-size: 11px; letter-spacing: .08em; color: var(--card-apagado); }
   .volta[data-faixa="roxo"] { color: var(--roxo); border-color: currentColor; }
   .volta[data-faixa="queimou"] { color: var(--queimou); font-size: 10px; letter-spacing: -.02em; }
-  .volta i { display: block; height: 4px; border-radius: 2px; margin: 6px 8px 0; background: var(--card-linha); }
-  .volta i b { display: block; height: 100%; border-radius: 2px; background: currentColor; }
-  #img-compartilhar { width: min(300px, 100%); border-radius: 12px; box-shadow: var(--sombra); justify-self: center; transform: rotate(-2deg); border: 6px solid #fff; }
+  #img-compartilhar { width: min(240px, 80%); border-radius: 12px; justify-self: center; transform: rotate(-2deg); border: 6px solid #fff; box-shadow: var(--sombra); }
 
-  .rk { padding: 18px 20px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .rk h3 { font-weight: 900; font-size: 26px; margin: 0; line-height: 1; }
-  .rk-form { display: flex; gap: 8px; }
-  .rk-form input { flex: 1; min-width: 0; font: inherit; font-weight: 800; color: var(--card-ink); background: #f2f3f6; border: 2px solid var(--card-linha); border-radius: 999px; padding: 11px 16px; user-select: text; -webkit-user-select: text; }
-  .rk-msg { font-size: 14px; color: var(--card-apagado); margin: 0; }
-  .rk-msg:empty { display: none; }
-  .rk-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: pos; }
-  .rk-lista li { counter-increment: pos; display: grid; grid-template-columns: 2.2em 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; border-radius: 10px; }
-  .rk-lista li:nth-child(-n+3)::before { color: var(--vermelho); }
-  .rk-lista li::before { content: counter(pos) "º"; font-weight: 900; color: var(--card-apagado); font-variant-numeric: tabular-nums; }
-  .rk-lista li.eu { background: #ffe9a3; }
-  .rk-lista .ap { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
-  .rk-lista .ms { font-weight: 900; font-size: 19px; font-variant-numeric: tabular-nums; }
+  .grid-card { padding: 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .grid-card h3 { font-weight: 900; font-size: 26px; margin: 0; line-height: 1; }
+  .vagas { display: flex; flex-wrap: wrap; gap: 6px; }
+  .vagas .tag { box-shadow: none; font-size: 12px; }
+  .prazo { font-size: 13px; color: var(--card-apagado); margin: 0; }
+  .prazo b { color: var(--vermelho); }
+  .g-form { display: flex; gap: 8px; }
+  .g-form label { flex: 1; min-width: 0; display: flex; align-items: center; background: #f2f3f6; border: 2px solid var(--card-linha); border-radius: 999px; padding-left: 14px; }
+  .g-form label span { font-weight: 900; color: var(--card-apagado); }
+  .g-form input { flex: 1; min-width: 0; font: inherit; font-weight: 800; color: var(--card-ink); background: transparent; border: 0; padding: 11px 12px 11px 2px; user-select: text; -webkit-user-select: text; outline: none; }
+  .g-form label:focus-within { border-color: var(--vermelho); }
+  .g-msg { font-size: 14px; color: var(--card-apagado); margin: 0; line-height: 1.35; }
+  .g-msg:empty { display: none; }
+  .g-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: pos; }
+  .g-lista li { counter-increment: pos; display: grid; grid-template-columns: 2.1em minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; }
+  .g-lista li::before { content: counter(pos) "º"; font-weight: 900; color: var(--card-apagado); font-variant-numeric: tabular-nums; }
+  .g-lista li.vaga { background: #fff4f4; }
+  .g-lista li.vaga::before { color: var(--vermelho); }
+  .g-lista li.teste { background: #f1f4ff; }
+  .g-lista li.eu { outline: 3px solid var(--amarelo); outline-offset: -3px; }
+  .g-lista .ig { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+  .g-lista .selo { font-size: 10px; font-weight: 900; letter-spacing: .05em; padding: 2px 7px; border-radius: 6px; background: var(--vermelho); color: #fff; }
+  .g-lista .selo.t { background: #24346b; }
+  .g-lista .ms { font-weight: 900; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .g-lista li.g-corte { display: block; height: 0; border-top: 2px dashed var(--card-linha); margin: 4px 6px; padding: 0; counter-increment: none; }
+  .g-lista li.g-corte::before { content: none; }
 
-  /* ranking aberto da tela inicial: tela cheia por cima do jogo */
-  #placar { position: fixed; inset: 0; z-index: 20; overflow-y: auto; display: grid; place-items: start center; align-content: start; gap: 16px;
-    background: radial-gradient(120% 80% at 50% 0%, var(--noite3) 0%, var(--noite2) 45%, var(--noite) 100%);
+  #placar { position: fixed; inset: 0; z-index: 20; overflow-y: auto; display: grid; place-items: start center; align-content: start; gap: 14px;
+    background: radial-gradient(120% 70% at 50% 0%, var(--noite3) 0%, var(--noite2) 45%, var(--noite) 100%);
     padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); cursor: default; }
-  #placar > * { width: min(520px, 100%); box-sizing: border-box; }
+  #placar > * { width: min(500px, 100%); box-sizing: border-box; }
 
   .sobre { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; overflow-y: auto;
-    background: rgba(7,11,29,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
-  .painel { width: min(460px, 100%); padding: 22px 22px 18px; box-sizing: border-box; display: grid; gap: 14px; position: relative; overflow: hidden; }
-  .painel .zebra { margin: -22px -22px 4px; border-radius: 0; }
-  .painel h2 { font-weight: 900; font-size: 42px; line-height: .95; margin: 0; }
+    background: rgba(7,11,29,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    padding: max(16px, env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px)); }
+  .painel { width: min(440px, 100%); padding: 20px 20px 16px; box-sizing: border-box; display: grid; gap: 12px; }
+  .painel-topo { display: grid; grid-template-columns: 1fr 86px; gap: 10px; align-items: end; }
+  .painel-topo .avatar { width: 86px; height: auto; display: block; }
+  .painel h2 { font-weight: 900; font-size: 36px; line-height: .95; margin: 8px 0 0; }
   .painel p { margin: 0; line-height: 1.45; font-weight: 700; }
-  .fatos { display: grid; gap: 10px; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; list-style: none; font-weight: 700; color: #3a3d48; }
+  .fatos { display: grid; gap: 9px; font-size: 14px; line-height: 1.38; margin: 0; padding: 0; list-style: none; font-weight: 700; color: #3a3d48; }
   .fatos li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
-  .fatos b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--vermelho); color: #fff; font-weight: 900; font-size: 14px; }
-  .fino { font-size: 12px; color: var(--card-apagado); margin: 0; font-weight: 700; }
+  .fatos b.n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--vermelho); color: #fff; font-weight: 900; font-size: 14px; }
+  .fino { font-size: 12px; color: var(--card-apagado); margin: 0; font-weight: 700; line-height: 1.4; }
   .fino a { color: inherit; }
   .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
   .acoes .pilula { flex: 1; min-width: 140px; }
 
   /* ---------- rodapé ---------- */
-  footer { display: flex; gap: 10px; align-items: center; min-height: 52px; }
-  .pilula { border: 0; border-radius: 999px; padding: 14px 22px; font-weight: 900; font-size: 16px; }
-  .pilula.primaria { flex: 1; background: var(--vermelho); color: #fff; box-shadow: 0 4px 0 #8f0f14; }
-  .pilula.primaria:active { transform: translateY(2px); box-shadow: 0 2px 0 #8f0f14; }
+  footer { display: flex; gap: 10px; align-items: center; min-height: 50px; }
+  .pilula { border: 0; border-radius: 999px; padding: 13px 20px; font-weight: 900; font-size: 16px; }
+  .pilula.primaria { flex: 1; background: var(--vermelho); color: #fff; box-shadow: 0 4px 0 var(--vermelho-escuro); }
+  .pilula.primaria:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--vermelho-escuro); }
   .pilula.secundaria { background: transparent; border: 2px solid var(--linha); }
   .card .pilula.secundaria { border-color: var(--card-linha); color: var(--card-ink); }
-  footer .pilula { white-space: nowrap; padding-inline: 18px; }
+  footer .pilula { white-space: nowrap; padding-inline: 16px; }
   .pilula:disabled { opacity: .6; cursor: progress; }
   .recorde { flex: 1; font-size: 13px; color: var(--apagado); font-variant-numeric: tabular-nums; line-height: 1.45; }
-  .recorde b { color: var(--ink); font-size: 17px; font-weight: 900; }
+  .recorde b { color: var(--ink); font-size: 16px; font-weight: 900; }
 </style>
-
-<svg class="poly" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <g opacity=".55">
-    <polygon points="0,0 140,0 60,120" fill="#16224d"/>
-    <polygon points="140,0 300,0 210,90" fill="#121c42"/>
-    <polygon points="300,0 400,0 400,140" fill="#16224d"/>
-    <polygon points="0,0 60,120 0,240" fill="#0f1638"/>
-    <polygon points="60,120 210,90 140,0" fill="#0d1030"/>
-    <polygon points="210,90 300,0 400,140" fill="#0f1638"/>
-    <polygon points="60,120 210,90 160,260" fill="#111a3e"/>
-    <polygon points="210,90 400,140 330,300" fill="#0d1030"/>
-    <polygon points="0,240 60,120 160,260" fill="#0b0f2a"/>
-    <polygon points="160,260 210,90 330,300" fill="#0f1638"/>
-    <polygon points="0,240 160,260 70,420" fill="#0d1030"/>
-    <polygon points="330,300 400,140 400,460" fill="#0b0f2a"/>
-    <polygon points="160,260 330,300 250,470" fill="#0b0f2a"/>
-    <polygon points="70,420 160,260 250,470" fill="#0d1030"/>
-    <polygon points="0,240 70,420 0,560" fill="#090d24"/>
-    <polygon points="250,470 330,300 400,460" fill="#0d1030"/>
-    <polygon points="70,420 250,470 140,640" fill="#090d24"/>
-    <polygon points="250,470 400,460 330,660" fill="#090d24"/>
-    <polygon points="0,560 70,420 140,640" fill="#0b0f2a"/>
-    <polygon points="140,640 250,470 330,660" fill="#0b0f2a"/>
-    <polygon points="0,560 140,640 0,800" fill="#080b20"/>
-    <polygon points="330,660 400,460 400,800" fill="#080b20"/>
-    <polygon points="0,800 140,640 230,800" fill="#090d24"/>
-    <polygon points="140,640 330,660 230,800" fill="#080b20"/>
-    <polygon points="230,800 330,660 400,800" fill="#090d24"/>
-  </g>
-</svg>
 
 <div id="app">
   <header>
-    <div class="zebra"></div>
     <div class="linha-topo">
-      <span class="tag">Largada GP</span>
-      <button class="chip" id="som" type="button" aria-pressed="true" aria-label="Som ligado">🔊 som</button>
+      <span class="tag">Sede 01</span>
+      <span class="tag amarela">Vaga aberta</span>
+      <button class="chip" id="som" type="button" aria-pressed="true">🔊</button>
     </div>
-    <h1><span class="antes">será que você reage</span><span class="forte">como piloto de F1?</span></h1>
+    <h1><span class="antes">o rui foi buscar a roda e não voltou.</span><span class="forte">quem vai pilotar?</span></h1>
     <div class="pips"><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><span class="contador" id="contador">Largada 1/5</span></div>
   </header>
 
   <main id="palco" aria-live="polite">
-    <div class="portico" aria-hidden="true">
-      <div class="col"><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div></div>
-      <div class="col"><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div></div>
-      <div class="col"><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div></div>
-      <div class="col"><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div></div>
-      <div class="col"><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div><div class="lamp"></div></div>
+    <div class="papel" aria-hidden="true"><div><b>PROCURA-SE</b>roda dianteira<br>e piloto</div></div>
+    <div class="lampadas" aria-hidden="true"></div>
+    <div class="meio">
+      <div class="cronometro" id="cronometro">
+        <svg viewBox="0 0 48 52" aria-hidden="true"><rect x="18" y="0" width="12" height="7" rx="2" fill="#fff"/><circle cx="24" cy="30" r="19" fill="#fff"/><circle cx="24" cy="30" r="14" fill="#f2f3f6"/><path d="M24 30 L24 19" stroke="#d7191f" stroke-width="4" stroke-linecap="round"/><circle cx="24" cy="30" r="3" fill="#1b1b22"/></svg>
+        <div class="tempo" id="tempo">0,000<small>s</small></div>
+      </div>
+      <p class="status" id="status"></p>
     </div>
-    <div class="cronometro" id="cronometro">
-      <svg viewBox="0 0 48 52" aria-hidden="true"><rect x="18" y="0" width="12" height="7" rx="2" fill="#fff"/><rect x="36" y="9" width="8" height="5" rx="2" fill="#fff" transform="rotate(40 40 11)"/><circle cx="24" cy="30" r="19" fill="#fff"/><circle cx="24" cy="30" r="14" fill="#f2f3f6"/><path d="M24 30 L24 19" stroke="#d7191f" stroke-width="4" stroke-linecap="round"/><circle cx="24" cy="30" r="3" fill="#1b1b22"/></svg>
-      <div class="tempo" id="tempo">0,000<small>s</small></div>
-    </div>
-    <p class="status" id="status"></p>
+    <!-- o kart enferrujado do ep. 1, ainda sem a roda da frente (apoiado num tijolo) -->
+    <svg class="kart" viewBox="0 0 300 120" aria-hidden="true">
+      <ellipse cx="150" cy="108" rx="130" ry="9" fill="rgba(0,0,0,.35)"/>
+      <rect x="22" y="44" width="40" height="30" rx="4" fill="#5a5d66"/><rect x="26" y="40" width="22" height="8" rx="2" fill="#7a7e88"/><path d="M22 52 h-10 v-12" stroke="#3a3d45" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <polygon points="40,78 250,78 268,66 270,84 40,90" fill="#6b3a24"/>
+      <polygon points="52,66 238,62 262,68 250,80 50,80" fill="#8a4b2f"/>
+      <polygon points="120,62 200,60 238,62 200,68 120,68" fill="#a8643c"/>
+      <polygon points="78,30 104,26 118,64 82,66" fill="#1d1d22"/><polygon points="80,34 100,30 112,62 86,63" fill="#2a2a31"/>
+      <path d="M150 64 L176 34" stroke="#2a2a31" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="178" cy="32" rx="16" ry="6" fill="none" stroke="#1d1d22" stroke-width="5" transform="rotate(-25 178 32)"/>
+      <circle cx="72" cy="86" r="24" fill="#1b1b22"/><circle cx="72" cy="86" r="14" fill="#2c2c33"/><circle cx="72" cy="86" r="7" fill="#8d939d"/>
+      <circle cx="132" cy="92" r="16" fill="#1b1b22"/><circle cx="132" cy="92" r="6" fill="#8d939d"/>
+      <rect x="226" y="80" width="40" height="20" rx="2" fill="#b5523b"/><rect x="226" y="88" width="40" height="3" fill="#8e3d2b"/><rect x="244" y="80" width="3" height="8" fill="#8e3d2b"/><rect x="236" y="91" width="3" height="9" fill="#8e3d2b"/><rect x="254" y="91" width="3" height="9" fill="#8e3d2b"/>
+      <circle cx="190" cy="74" r="2" fill="#c97a4a"/><circle cx="104" cy="76" r="2.5" fill="#c97a4a"/><circle cx="214" cy="70" r="1.8" fill="#c97a4a"/>
+      <text x="160" y="77" font-family="Nunito" font-weight="900" font-size="11" fill="#f4efe1" opacity=".9">20</text>
+    </svg>
 
     <section id="resultado" hidden>
-      <div class="card">
-        <div class="rotulo">Sua média em 5 largadas</div>
-        <div class="media" id="media"></div>
-        <span class="tag amarela veredito" id="veredito"></span>
+      <div class="card ficha">
+        <div class="rotulo">Ficha do candidato</div>
+        <div class="ficha-topo">
+          <div id="ficha-avatar"></div>
+          <div>
+            <div class="seria">pelo seu tempo, na equipe você seria</div>
+            <span class="tag amarela funcao" id="funcao"></span>
+            <div class="media" id="media"></div>
+          </div>
+        </div>
         <div class="voltas" id="voltas"></div>
         <p class="nota" id="nota"></p>
-        <img id="img-compartilhar" alt="Card com suas cinco largadas e sua média" hidden>
-        <p class="nota" id="dica-compartilhar" hidden>Segure a imagem (ou clique com o botão direito) para salvar.</p>
+        <img id="img-compartilhar" alt="Card com sua média e sua função na equipe" hidden>
+        <p class="nota" id="dica-compartilhar" hidden>Segure a imagem (ou clique com o botão direito) para salvar e postar no story.</p>
       </div>
-      <div class="card rk" id="rk">
-        <div class="rotulo">Ranking geral</div>
-        <h3>Top 20 médias</h3>
-        <form class="rk-form" id="rk-form" hidden>
-          <input id="rk-apelido" maxlength="16" minlength="2" placeholder="Seu apelido" autocomplete="nickname" aria-label="Seu apelido" required>
-          <button class="pilula primaria" id="rk-salvar" type="submit" style="flex:0 0 auto">Salvar</button>
+      <div class="card grid-card" id="grid">
+        <div class="rotulo">Grid da seletiva</div>
+        <h3>Quem pilota a gente?</h3>
+        <div class="vagas"><span class="tag">1º Piloto 1</span><span class="tag">2º Piloto 2</span><span class="tag azul" id="vaga-teste">3º ao 5º Teste</span></div>
+        <p class="prazo" id="prazo"></p>
+        <form class="g-form" id="g-form" hidden>
+          <label><span>@</span><input id="g-insta" maxlength="31" placeholder="seu Instagram" autocomplete="username" autocapitalize="off" spellcheck="false" aria-label="Seu @ do Instagram" required></label>
+          <button class="pilula primaria" id="g-salvar" type="submit" style="flex:0 0 auto">Entrar</button>
         </form>
-        <p class="rk-msg" id="rk-msg"></p>
-        <ol class="rk-lista" id="rk-lista"></ol>
+        <p class="g-msg" id="g-msg"></p>
+        <ol class="g-lista" id="g-lista"></ol>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="recorde" id="recorde">Sua melhor largada: <b id="melhor">—</b><br>Sua melhor média: <b id="melhor-media">—</b></div>
-    <button class="pilula secundaria" id="compartilhar" hidden>Compartilhar</button>
-    <button class="pilula primaria" id="denovo" hidden>Outra rodada</button>
+    <button class="pilula secundaria" id="ver-grid" type="button">Ver grid</button>
+    <button class="pilula secundaria" id="compartilhar" hidden>Postar</button>
+    <button class="pilula primaria" id="denovo" hidden>Tentar de novo</button>
   </footer>
 </div>
 
@@ -254,39 +271,73 @@
 
 <div class="sobre" id="intro">
   <div class="card painel" role="dialog" aria-modal="true" aria-labelledby="intro-titulo">
-    <div class="zebra" aria-hidden="true"></div>
-    <div class="rotulo">Teste de reflexo</div>
-    <h2 id="intro-titulo">Largada GP</h2>
-    <p>Cinco luzes vermelhas acendem, uma por segundo. Quando todas apagam, a corrida começa. Toque na tela assim que elas apagarem.</p>
+    <div class="painel-topo">
+      <div>
+        <span class="tag amarela">Vaga aberta</span>
+        <h2 id="intro-titulo">Seletiva de pilotos</h2>
+      </div>
+      <div id="intro-avatar"></div>
+    </div>
+    <p>O Rui foi buscar a roda e não voltou. A <b id="nome-equipe">equipe dos seguidores</b> precisa de gente no volante: <b>Piloto 1</b>, <b>Piloto 2</b> e <b>pilotos de teste</b>.</p>
     <ul class="fatos">
-      <li><b>1</b><span>Na F1 não existe tempo fixo para apagar: depois da quinta luz, o diretor de prova apaga quando quiser. Aqui a espera é sorteada, entre 0,2 e 3 s.</span></li>
-      <li><b>2</b><span>Reagir é ver, decidir e mexer o corpo. A maioria das pessoas leva um quarto de segundo; um piloto de F1 fica perto de 0,2 s.</span></li>
-      <li><b>3</b><span>A FIA não mede seu reflexo: um sensor no asfalto vê se o carro se mexe antes da hora, e isso é largada queimada.</span></li>
+      <li><b class="n">1</b><span>As 5 lâmpadas da garagem acendem, uma por segundo. Quando todas apagarem, toque na tela (no computador, barra de espaço). Cada rodada tem 5 largadas.</span></li>
+      <li><b class="n">2</b><span>Tocou com a luz acesa? Largada queimada: vale 1 segundo na sua média.</span></li>
+      <li><b class="n">3</b><span>Entre no grid com seu @ do Instagram. Quando a seletiva fechar, o 1º vira Piloto 1, o 2º vira Piloto 2 e os próximos viram pilotos de teste.</span></li>
     </ul>
     <div class="acoes">
-      <button class="pilula primaria" id="comecar" type="button">Começar</button>
-      <button class="pilula secundaria" id="intro-placar" type="button">Ver ranking</button>
+      <button class="pilula primaria" id="comecar" type="button">Fazer o teste</button>
+      <button class="pilula secundaria" id="intro-placar" type="button">Ver o grid</button>
     </div>
-    <p class="fino">Jogo não oficial, sem ligação com a F1 ou a FIA. No computador, dá para usar a barra de espaço. Ideia original: <a href="https://lightsout-gp.vercel.app/" target="_blank" rel="noopener">Lights Out GP</a>, de <a href="https://www.instagram.com/formulaafondo/" target="_blank" rel="noopener">@formulaafondo</a>.</p>
+    <p class="fino">Para valer, siga a página. Os primeiros colocados podem ter que gravar a tela fazendo o teste. Jogo de fã, sem ligação com a F1 ou a FIA. Inspirado no <a href="https://lightsout-gp.vercel.app/" target="_blank" rel="noopener">Lights Out GP</a>.</p>
   </div>
 </div>
 
 <script>
-  // ---- ajuste aqui: seu @ aparece no card de compartilhar (deixe "" para esconder) ----
-  const PERFIL = "";
+  // ---------- AJUSTE AQUI ----------
+  const EQUIPE = "equipe dos seguidores"; // troque quando a equipe ganhar nome
+  const PERFIL = "";                      // seu @ no card de postar ("" esconde)
+  const PILOTOS_TESTE = 3;                // vagas de piloto de teste depois do Piloto 1 e 2
+  // ---------------------------------
 
   const $ = (id) => document.getElementById(id);
-  const cols = [...document.querySelectorAll(".col")];
-  const pips = [...document.querySelectorAll(".pip")];
   const LARGADAS = 5;
   const PENALIDADE = 1000;   // largada queimada vale 1 s na média
   const ANTECIPACAO = 100;   // abaixo de 100 ms ninguém está reagindo, chutou
+  const PELES = ["#f0c9a8", "#e8b48f", "#c68a62", "#a8714d", "#7a4f35"]; // as mesmas dos bonecos da série
+  $("nome-equipe").textContent = EQUIPE;
+  $("vaga-teste").textContent = `3º ao ${2 + PILOTOS_TESTE}º Teste`;
 
-  // ---- armazenamento local (pode estar bloqueado: aba anônima, prévias) ----
+  // ---------- bonecos low-poly da série (SVG) ----------
+  function avatar(tipo, pele = "#c68a62") {
+    const corpo = `<polygon points="26,104 94,104 100,140 20,140" fill="#d7191f"/><polygon points="60,104 94,104 100,140 60,140" fill="#b3141a"/><rect x="55" y="104" width="10" height="36" fill="#f4f4f4"/><polygon points="40,100 80,100 72,110 48,110" fill="#f4f4f4"/>`;
+    const cabeca = `<polygon points="60,20 86,30 98,56 92,84 70,98 50,98 28,84 22,56 34,30" fill="${pele}"/><polygon points="60,20 86,30 98,56 92,84 70,98 60,60" fill="#000" opacity=".1"/><polygon points="34,30 60,20 60,60 22,56" fill="#fff" opacity=".08"/>`;
+    const rosto = `<circle cx="47" cy="62" r="5" fill="#1b1b22"/><circle cx="73" cy="62" r="5" fill="#1b1b22"/><circle cx="48.5" cy="60.5" r="1.5" fill="#fff"/><circle cx="74.5" cy="60.5" r="1.5" fill="#fff"/><path d="M50 76 Q60 84 70 76" stroke="#5a2e1c" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    const bone = `<polygon points="24,50 34,26 60,16 86,26 96,50 60,44" fill="#d7191f"/><polygon points="60,16 86,26 96,50 60,44" fill="#b3141a"/><rect x="22" y="46" width="76" height="7" rx="3" fill="#c9ced6"/>`;
+    const capacete = `<polygon points="60,12 90,24 104,54 98,88 74,104 46,104 22,88 16,54 30,24" fill="#f2f2f5"/><polygon points="60,12 90,24 104,54 98,88 74,104 60,58" fill="#000" opacity=".09"/><rect x="24" y="48" width="72" height="28" rx="12" fill="#0b0b10"/><circle cx="44" cy="58" r="2" fill="#fff" opacity=".85"/><circle cx="72" cy="60" r="1.6" fill="#ff9fd0" opacity=".9"/><polygon points="56,12 64,12 66,48 54,48" fill="#d7191f"/><rect x="50" y="94" width="20" height="6" fill="#ffd84d"/>`;
+    const pneu = `<circle cx="34" cy="118" r="20" fill="#1b1b22"/><circle cx="34" cy="118" r="9" fill="#d7191f"/>`;
+    const lanterna = `<polygon points="98,108 160,80 160,140" fill="#ffd84d" opacity=".55"/><rect x="84" y="104" width="18" height="10" rx="3" fill="#3a3d45"/>`;
+    let partes = corpo;
+    if (tipo === "capacete") partes += capacete;
+    else partes += cabeca + rosto + (tipo === "roda" ? lanterna : "") + bone + (tipo === "pneu" ? pneu : "");
+    return `<svg class="avatar" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Boneco da equipe">${partes}</svg>`;
+  }
+  $("intro-avatar").innerHTML = avatar("capacete");
+
+  // ---------- lâmpadas penduradas da garagem ----------
+  const caixaLamp = document.querySelector(".lampadas");
+  for (let i = 0; i < 5; i++) {
+    const d = document.createElement("div");
+    d.className = "lampada";
+    d.innerHTML = `<div class="fio"></div><svg viewBox="0 0 60 44"><defs><radialGradient id="g${i}"><stop offset="0" stop-color="#ffb3a8"/><stop offset=".5" stop-color="#ff3b30" stop-opacity=".8"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient></defs><circle class="brilho" cx="30" cy="30" r="28" fill="url(#g${i})"/><polygon points="22,0 38,0 58,26 2,26" fill="#1f2540"/><polygon points="30,0 38,0 58,26 30,26" fill="#171c33"/><rect x="0" y="24" width="60" height="5" rx="2.5" fill="#f4f4f4"/><ellipse class="bulbo" cx="30" cy="33" rx="9" ry="8"/></svg><div class="cone"></div>`;
+    caixaLamp.append(d);
+  }
+  const lamps = [...document.querySelectorAll(".lampada")];
+  const pips = [...document.querySelectorAll(".pip")];
+
+  // ---------- armazenamento local (pode estar bloqueado) ----------
   const ler = (k) => { try { return Number(localStorage.getItem(k)) || Infinity; } catch { return Infinity; } };
   const gravar = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
-  let melhor = ler("lg_melhor"), melhorMedia = ler("lg_melhor_media");
-
+  let melhor = ler("sel_melhor"), melhorMedia = ler("sel_melhor_media");
   const fmt = (ms) => (ms / 1000).toFixed(3).replace(".", ",");
   const mostrarRecorde = () => {
     $("melhor").textContent = melhor < Infinity ? fmt(melhor) + " s" : "—";
@@ -294,12 +345,12 @@
   };
   mostrarRecorde();
 
-  // ---- som 8-bit sintetizado (nada toca quando as luzes apagam: o teste é só visual) ----
+  // ---------- som 8-bit sintetizado (nada toca quando as luzes apagam: o teste é só visual) ----------
   let somLigado = true, audio = null;
-  try { somLigado = localStorage.getItem("lg_som") !== "0"; } catch {}
-  const pintarSom = () => { $("som").textContent = somLigado ? "🔊 som" : "🔇 mudo"; $("som").setAttribute("aria-pressed", somLigado); $("som").setAttribute("aria-label", somLigado ? "Som ligado" : "Som desligado"); };
+  try { somLigado = localStorage.getItem("sel_som") !== "0"; } catch {}
+  const pintarSom = () => { $("som").textContent = somLigado ? "🔊" : "🔇"; $("som").setAttribute("aria-pressed", somLigado); $("som").setAttribute("aria-label", somLigado ? "Som ligado" : "Som desligado"); };
   pintarSom();
-  $("som").addEventListener("click", () => { somLigado = !somLigado; gravar("lg_som", somLigado ? "1" : "0"); pintarSom(); });
+  $("som").addEventListener("click", () => { somLigado = !somLigado; gravar("sel_som", somLigado ? "1" : "0"); pintarSom(); });
   function bip(freq, dur = 0.08, tipo = "square", vol = 0.06, atraso = 0) {
     if (!somLigado) return;
     try {
@@ -310,7 +361,7 @@
       o.connect(g).connect(audio.destination); o.start(t); o.stop(t + dur + 0.02);
     } catch {}
   }
-  const somAcende = (i) => bip(440 + i * 40, 0.07);
+  const somAcende = (i) => { bip(140 + i * 10, 0.05, "square", 0.05); bip(420 + i * 40, 0.06, "triangle", 0.05, 0.01); }; // clique do interruptor
   const somTempo = (faixa) => {
     if (faixa === "roxo") [784, 988, 1319].forEach((f, i) => bip(f, 0.09, "square", 0.06, i * 0.07));
     else if (faixa === "verde") [659, 880].forEach((f, i) => bip(f, 0.08, "square", 0.05, i * 0.06));
@@ -319,28 +370,23 @@
   const somQueimou = () => { bip(110, 0.28, "sawtooth", 0.07); bip(82, 0.3, "square", 0.05, 0.05); };
   const somFim = () => [523, 659, 784, 1047].forEach((f, i) => bip(f, 0.1, "square", 0.05, i * 0.09));
 
+  // ---------- jogo ----------
   // estado: parado | acendendo | segurando | apagou | espera | travado | fim
-  let estado = "parado", tempos = [], apagouEm = 0, timers = [];
+  let estado = "parado", tempos = [], apagouEm = 0, timers = [], rodada = null;
   const limparTimers = () => { timers.forEach(clearTimeout); timers = []; };
-  const luzes = (n) => { cols.forEach((c, i) => c.classList.toggle("acesa", i < n)); $("palco").classList.toggle("acesas", n > 0); };
+  const luzes = (n) => { lamps.forEach((l, i) => l.classList.toggle("acesa", i < n)); $("palco").classList.toggle("acesas", n > 0); };
 
   function status(antes, forte) {
-    const s = $("status");
-    s.innerHTML = "";
+    const s = $("status"); s.textContent = "";
     const a = document.createElement("span"); a.className = "antes"; a.textContent = antes;
     const f = document.createElement("span"); f.className = "forte"; f.textContent = forte;
     s.append(a, f);
   }
-
   function mostrarTempo(html, faixa) {
-    const t = $("tempo");
-    t.innerHTML = html;
-    t.dataset.faixa = faixa || "";
-    const c = $("cronometro");
-    c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop");
+    $("tempo").innerHTML = html; $("tempo").dataset.faixa = faixa || "";
+    const c = $("cronometro"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop");
   }
   const zerarTempo = () => { $("tempo").innerHTML = "0,000<small>s</small>"; $("tempo").dataset.faixa = ""; };
-
   function pintarPips() {
     pips.forEach((p, i) => {
       p.className = "pip" + (i === tempos.length && estado !== "fim" ? " agora" : "");
@@ -349,239 +395,269 @@
     $("contador").textContent = estado === "fim" ? "Rodada completa" : `Largada ${Math.min(tempos.length + 1, LARGADAS)}/${LARGADAS}`;
   }
 
+  // vale assinado pelo servidor no começo de cada rodada (o grid só aceita rodadas de verdade)
+  function pedirRodada() {
+    rodada = fetch("/api/ranking?rodada=1").then((r) => r.json()).then((j) => j.rodada || null).catch(() => null);
+  }
+
   function armar() {
+    if (!tempos.length) pedirRodada();
+    $("ver-grid").hidden = true; // o grid só abre fora de uma rodada
     estado = "acendendo";
-    luzes(0);
-    zerarTempo();
-    status("olho nas", "luzes…");
-    // uma coluna por segundo, depois uma espera sorteada até apagar (como na F1)
+    luzes(0); zerarTempo();
+    status("olho nas", "lâmpadas…");
     for (let i = 1; i <= 5; i++) timers.push(setTimeout(() => { luzes(i); somAcende(i); }, i * 1000));
     timers.push(setTimeout(() => { estado = "segurando"; }, 5000));
-    const espera = 5000 + 200 + Math.random() * 2800; // a regra não fixa janela; 0,2–3 s é a faixa citada
+    const espera = 5000 + 200 + Math.random() * 2800; // como na F1: depois da 5ª, espera sorteada de 0,2 a 3 s
     timers.push(setTimeout(() => {
       luzes(0);
-      // o carimbo do rAF ≈ o quadro que pinta as luzes apagadas
-      requestAnimationFrame((t) => { apagouEm = t; });
+      requestAnimationFrame((t) => { apagouEm = t; }); // carimbo do quadro que pinta tudo apagado
       estado = "apagou";
     }, espera));
   }
 
   function registrar(entrada) {
-    tempos.push(entrada);
-    pintarPips();
+    tempos.push(entrada); pintarPips();
     const ultima = tempos.length === LARGADAS;
-    estado = ultima ? "travado" : "espera"; // travado: sem toques enquanto o resultado entra
+    estado = ultima ? "travado" : "espera";
     if (ultima) timers.push(setTimeout(terminar, 900));
   }
 
   function queimou(motivo) {
     limparTimers(); luzes(0);
-    mostrarTempo("QUEIMOU!", "queimou");
-    somQueimou();
+    mostrarTempo("QUEIMOU!", "queimou"); somQueimou();
     status(motivo, `vale ${fmt(PENALIDADE)} s`);
     registrar({ ms: PENALIDADE, faixa: "queimou", queimou: true });
   }
 
   function reagir(carimbo) {
-    if (!apagouEm) return queimou("tocou antes de apagar:"); // o toque chegou antes do quadro escuro
+    if (!apagouEm) return queimou("tocou antes de apagar:");
     const ms = carimbo - apagouEm;
     if (ms < ANTECIPACAO) return queimou("ninguém reage tão rápido:");
     const limpos = tempos.filter((t) => !t.queimou).map((t) => t.ms);
     let faixa = "amarelo";
-    if (ms < melhor) { melhor = ms; gravar("lg_melhor", ms); faixa = "roxo"; }
+    if (ms < melhor) { melhor = ms; gravar("sel_melhor", ms); faixa = "roxo"; }
     else if (!limpos.length || ms < Math.min(...limpos)) faixa = "verde";
     mostrarRecorde();
-    mostrarTempo(fmt(ms) + "<small>s</small>", faixa);
-    somTempo(faixa);
-    if (faixa === "roxo") status("sua melhor largada", "de todas!");
+    mostrarTempo(fmt(ms) + "<small>s</small>", faixa); somTempo(faixa);
+    if (faixa === "roxo") status("seu recorde", "de todos!");
     else if (faixa === "verde") status("melhor largada", "da rodada");
     else if (tempos.length === LARGADAS - 1) status("essa foi a", "última");
     else status("toque para a", "próxima largada");
     registrar({ ms, faixa });
   }
 
-  function veredito(media) {
-    if (media < 200) return ["Reflexo de pole position", "Você está no nível dos melhores na largada."];
-    if (media < 250) return ["Pronto pra Fórmula 1", "É assim que um piloto larga num dia bom."];
-    if (media < 300) return ["Tomou dois na primeira curva", "Rápido, mas na F1 isso é perder posição."];
-    if (media < 400) return ["Arrancada de sinal de trânsito", "Chega, mas sem pressa nenhuma."];
-    return ["Ainda tá nos boxes", "As luzes já apagaram faz tempo."];
-  }
-
+  // função na equipe pelo tempo (os mesmos cortes colorem o grid)
+  const FUNCOES = [
+    [200, "Piloto", "capacete", "Reflexo de pole. Entra no grid e segura essa vaga."],
+    [250, "Piloto de teste", "capacete", "Rápido o bastante para andar no kart. Falta pouco para a vaga de titular."],
+    [300, "Mecânico", "bone", "Mão rápida na chave de roda. O volante ainda pede um pouco mais."],
+    [380, "Equipe de pneus", "pneu", "Ninguém troca pneu murcho como você."],
+    [Infinity, "Buscar a roda", "roda", "Leva uma lanterna. O Rui também foi e não voltou."],
+  ];
+  const funcaoDe = (ms) => FUNCOES.find((f) => ms < f[0]);
   const mediaRodada = () => tempos.reduce((s, t) => s + t.ms, 0) / LARGADAS;
+  const pele = PELES[Math.floor(Math.random() * PELES.length)];
 
   function terminar() {
-    estado = "fim";
-    pintarPips();
+    estado = "fim"; pintarPips();
     const media = mediaRodada();
-    const [titulo, linha] = veredito(media);
-    if (media < melhorMedia) { melhorMedia = media; gravar("lg_melhor_media", media); }
-    mostrarRecorde();
-    somFim();
+    const [, nome, tipo, linha] = funcaoDe(media);
+    if (media < melhorMedia) { melhorMedia = media; gravar("sel_melhor_media", media); }
+    mostrarRecorde(); somFim();
+    $("ficha-avatar").innerHTML = avatar(tipo, pele);
+    $("funcao").textContent = nome;
     $("media").innerHTML = fmt(media) + "<small>s</small>";
-    $("veredito").textContent = titulo;
     const queimadas = tempos.filter((t) => t.queimou).length;
-    $("nota").textContent = linha + " Um piloto de F1 costuma reagir em uns 0,2 s." +
-      (queimadas ? ` ${queimadas === 1 ? "Sua largada queimada contou" : `Suas ${queimadas} largadas queimadas contaram`} como ${fmt(PENALIDADE)} s${queimadas === 1 ? "" : " cada"}.` : "");
+    $("nota").textContent = linha + (queimadas ? ` ${queimadas === 1 ? "Sua largada queimada contou" : `Suas ${queimadas} largadas queimadas contaram`} como ${fmt(PENALIDADE)} s${queimadas === 1 ? "" : " cada"}.` : "");
     const limpos = tempos.filter((t) => !t.queimou).map((t) => t.ms);
     const maisRapida = limpos.length ? Math.min(...limpos) : -1;
-    $("voltas").innerHTML = tempos.map((t, i) => {
-      const barra = t.queimou ? 100 : Math.max(8, Math.min(100, ((t.ms - 100) / 400) * 100));
-      return `<div class="volta" data-faixa="${t.queimou ? "queimou" : t.ms === maisRapida ? "roxo" : ""}"><span>L${i + 1}</span>${t.queimou ? "QUEIMOU" : fmt(t.ms)}<i><b style="width:${barra}%"></b></i></div>`;
-    }).join("");
+    $("voltas").innerHTML = tempos.map((t, i) =>
+      `<div class="volta" data-faixa="${t.queimou ? "queimou" : t.ms === maisRapida ? "roxo" : ""}"><span>L${i + 1}</span>${t.queimou ? "QUEIMOU" : fmt(t.ms)}</div>`).join("");
     $("img-compartilhar").hidden = $("dica-compartilhar").hidden = true;
     salvo = null;
-    $("resultado").append($("rk"));
-    $("rk-form").hidden = false;
-    $("rk-salvar").disabled = false;
-    $("rk-msg").textContent = "";
-    carregarRanking();
-    $("resultado").hidden = false;
-    $("resultado").scrollTop = 0;
-    $("recorde").hidden = true;
+    $("resultado").append($("grid"));
+    mostrarForm();
+    $("g-salvar").disabled = false;
+    $("g-msg").textContent = "";
+    carregarGrid();
+    $("resultado").hidden = false; $("resultado").scrollTop = 0;
+    $("recorde").hidden = true; $("ver-grid").hidden = true;
     $("compartilhar").hidden = $("denovo").hidden = false;
     $("denovo").focus();
   }
 
   function reiniciar() {
     limparTimers();
-    tempos = []; estado = "parado"; apagouEm = 0;
+    tempos = []; estado = "parado"; apagouEm = 0; rodada = null;
     luzes(0);
-    $("resultado").hidden = true; $("recorde").hidden = false;
+    $("resultado").hidden = true; $("recorde").hidden = false; $("ver-grid").hidden = false;
     $("compartilhar").hidden = $("denovo").hidden = true;
     zerarTempo();
-    status("toque na tela para ir ao grid", "apagou? toca!");
+    status("toque na tela para", "acender as luzes");
     pintarPips();
   }
 
   function toque(carimbo) {
     if (estado === "parado" || estado === "espera") { apagouEm = 0; armar(); }
-    else if (estado === "acendendo" || estado === "segurando") queimou("saiu com as luzes acesas:");
+    else if (estado === "acendendo" || estado === "segurando") queimou("saiu com a luz acesa:");
     else if (estado === "apagou") reagir(carimbo);
   }
-
+  const bloqueado = () => estado === "fim" || !$("placar").hidden || !$("intro").hidden;
   // event.timeStamp usa o mesmo relógio do performance.now(): o tempo do toque não sofre atraso do código
   $("palco").addEventListener("pointerdown", (e) => {
-    if (estado === "fim" || e.button > 0 || !$("placar").hidden || !$("intro").hidden) return;
-    e.preventDefault();
-    toque(e.timeStamp);
+    if (bloqueado() || e.button > 0) return;
+    e.preventDefault(); toque(e.timeStamp);
   });
   addEventListener("keydown", (e) => {
-    if (e.key !== " " || e.repeat || estado === "fim" || !$("placar").hidden || !$("intro").hidden) return;
+    if (e.key !== " " || e.repeat || bloqueado()) return;
     if (document.activeElement && document.activeElement.tagName === "INPUT") return;
-    e.preventDefault();
-    toque(e.timeStamp);
+    e.preventDefault(); toque(e.timeStamp);
   });
   $("denovo").addEventListener("click", reiniciar);
 
-  // ---- card para compartilhar: 1080x1350 no estilo dos vídeos ----
-  const site = location.host || "largada-gp.vercel.app";
-  const textoCompartilhar = () => `Minha média em 5 largadas de F1: ${fmt(mediaRodada())} s. Você reage como piloto? Largada GP https://${site}`;
+  // ---------- card para postar: story 1080x1920 ----------
+  const site = location.host || "teste-para-piloto.vercel.app";
   function pilulaCanvas(g, x, y, texto, fundo, cor, tam) {
     g.font = `900 ${tam}px Nunito`;
     const w = g.measureText(texto).width + tam * 1.2;
     g.fillStyle = fundo; g.beginPath(); g.roundRect(x, y, w, tam * 1.55, tam * 0.35); g.fill();
     g.fillStyle = cor; g.fillText(texto, x + tam * 0.6, y + tam * 1.12);
-    return w;
   }
+  const carregarImg = (src) => new Promise((ok, erro) => { const i = new Image(); i.onload = () => ok(i); i.onerror = erro; i.src = src; });
   $("compartilhar").addEventListener("click", async () => {
     await document.fonts.ready;
-    const cv = document.createElement("canvas"); cv.width = 1080; cv.height = 1350;
+    const cv = document.createElement("canvas"); cv.width = 1080; cv.height = 1920;
     const g = cv.getContext("2d");
-    const fundo = g.createRadialGradient(540, 0, 50, 540, 300, 1300);
-    fundo.addColorStop(0, "#16224d"); fundo.addColorStop(.45, "#0d1030"); fundo.addColorStop(1, "#070b1d");
-    g.fillStyle = fundo; g.fillRect(0, 0, 1080, 1350);
-    // zebra no topo e embaixo
-    for (let x = 0; x < 1080; x += 72) { g.fillStyle = "#d7191f"; g.fillRect(x, 0, 36, 22); g.fillStyle = "#f4f4f4"; g.fillRect(x + 36, 0, 36, 22); g.fillStyle = "#d7191f"; g.fillRect(x, 1328, 36, 22); g.fillStyle = "#f4f4f4"; g.fillRect(x + 36, 1328, 36, 22); }
-    pilulaCanvas(g, 80, 80, "• LARGADA GP", "#d7191f", "#fff", 36);
-    // pórtico com as luzes apagadas
-    g.fillStyle = "#1b1b22"; g.beginPath(); g.roundRect(60, 180, 960, 22, 6); g.fill();
-    for (let c = 0; c < 5; c++) {
-      g.fillStyle = "#1b1b22"; g.beginPath(); g.roundRect(80 + c * 188, 200, 168, 300, 22); g.fill();
-      for (let r = 0; r < 2; r++) { g.fillStyle = "#2a2f45"; g.beginPath(); g.arc(80 + c * 188 + 84, 280 + r * 140, 54, 0, 7); g.fill(); }
+    // parede de tábuas da garagem + chão
+    g.fillStyle = "#3c3a41"; g.fillRect(0, 0, 1080, 1920);
+    for (let y = 0; y < 1460; y += 78) { g.fillStyle = "#55525a"; g.fillRect(0, y + 70, 1080, 8); }
+    g.fillStyle = "#2a2730"; g.fillRect(0, 1460, 1080, 460);
+    const v = g.createLinearGradient(0, 0, 0, 1920); v.addColorStop(0, "rgba(7,11,29,.75)"); v.addColorStop(.5, "rgba(7,11,29,.35)"); v.addColorStop(1, "rgba(7,11,29,.85)");
+    g.fillStyle = v; g.fillRect(0, 0, 1080, 1920);
+    // 5 lâmpadas apagadas
+    for (let i = 0; i < 5; i++) {
+      const x = 108 + i * 216;
+      g.fillStyle = "#15151b"; g.fillRect(x - 3, 0, 6, 120);
+      g.fillStyle = "#1f2540"; g.beginPath(); g.moveTo(x - 30, 120); g.lineTo(x + 30, 120); g.lineTo(x + 80, 190); g.lineTo(x - 80, 190); g.fill();
+      g.fillStyle = "#f4f4f4"; g.beginPath(); g.roundRect(x - 84, 186, 168, 12, 6); g.fill();
+      g.fillStyle = "#5a5660"; g.beginPath(); g.ellipse(x, 214, 24, 22, 0, 0, 7); g.fill();
     }
-    g.textAlign = "left";
-    g.fillStyle = "rgba(255,255,255,.5)"; g.font = "800 40px Nunito"; g.fillText("minha média em 5 largadas", 80, 610);
-    g.fillStyle = "#fff"; g.font = "900 210px Nunito"; g.shadowColor = "rgba(0,0,0,.45)"; g.shadowBlur = 22; g.fillText(fmt(mediaRodada()) + " s", 70, 800); g.shadowBlur = 0;
-    pilulaCanvas(g, 80, 850, $("veredito").textContent, "#ffd400", "#1b1b22", 50);
+    pilulaCanvas(g, 80, 330, "• SELETIVA DE PILOTOS", "#d7191f", "#fff", 42);
+    g.fillStyle = "rgba(255,255,255,.6)"; g.font = "800 50px Nunito"; g.fillText("minha média em 5 largadas", 80, 520);
+    g.fillStyle = "#fff"; g.font = "900 230px Nunito"; g.shadowColor = "rgba(0,0,0,.5)"; g.shadowBlur = 24; g.fillText(fmt(mediaRodada()) + " s", 64, 740); g.shadowBlur = 0;
+    g.fillStyle = "rgba(255,255,255,.6)"; g.font = "800 44px Nunito"; g.fillText("na equipe eu seria", 80, 850);
+    pilulaCanvas(g, 80, 880, $("funcao").textContent, "#ffd84d", "#1b1b22", 62);
     const limpos = tempos.filter((t) => !t.queimou).map((t) => t.ms), maisRapida = limpos.length ? Math.min(...limpos) : -1;
     tempos.forEach((t, i) => {
       const x = 80 + i * 188;
-      g.fillStyle = "rgba(255,255,255,.08)"; g.beginPath(); g.roundRect(x, 990, 168, 120, 18); g.fill();
-      g.fillStyle = "rgba(255,255,255,.5)"; g.font = "900 26px Nunito"; g.fillText("L" + (i + 1), x + 18, 1030);
-      g.fillStyle = t.queimou ? "#ff3b45" : t.ms === maisRapida ? "#a970ff" : "#fff"; g.font = `900 ${t.queimou ? 27 : 44}px Nunito`;
-      g.fillText(t.queimou ? "QUEIMOU" : fmt(t.ms), x + 18, 1085);
+      g.fillStyle = "rgba(255,255,255,.1)"; g.beginPath(); g.roundRect(x, 1060, 168, 120, 18); g.fill();
+      g.fillStyle = "rgba(255,255,255,.55)"; g.font = "900 26px Nunito"; g.fillText("L" + (i + 1), x + 18, 1100);
+      g.fillStyle = t.queimou ? "#ff4d55" : t.ms === maisRapida ? "#b388ff" : "#fff"; g.font = `900 ${t.queimou ? 27 : 44}px Nunito`;
+      g.fillText(t.queimou ? "QUEIMOU" : fmt(t.ms), x + 18, 1155);
     });
-    g.fillStyle = "#fff"; g.font = "800 44px Nunito"; g.fillText("você reage como piloto de F1?", 80, 1210);
-    g.fillStyle = "rgba(255,255,255,.55)"; g.font = "800 32px Nunito"; g.fillText((PERFIL ? PERFIL + " · " : "") + site, 80, 1270);
+    try {
+      const svg = avatar(funcaoDe(mediaRodada())[2], pele);
+      const img = await carregarImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg));
+      g.drawImage(img, 600, 1240, 400, 467);
+    } catch {}
+    g.fillStyle = "#fff"; g.font = "900 64px Nunito"; g.fillText("a vaga de piloto", 80, 1420);
+    g.fillText("tá aberta.", 80, 1495);
+    g.fillStyle = "#ffd84d"; g.fillText("bora?", 80, 1570);
+    g.fillStyle = "rgba(255,255,255,.7)"; g.font = "800 38px Nunito"; g.fillText(site, 80, 1760);
+    if (PERFIL) g.fillText(PERFIL, 80, 1815);
     cv.toBlob(async (blob) => {
-      const arquivo = new File([blob], "largada-gp.png", { type: "image/png" });
+      const arquivo = new File([blob], "seletiva-de-pilotos.png", { type: "image/png" });
+      const texto = `Fiz ${fmt(mediaRodada())} s na seletiva de pilotos. A vaga tá aberta: https://${site}`;
       if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
-        try { await navigator.share({ files: [arquivo], text: textoCompartilhar() }); return; } catch (e) { if (e.name === "AbortError") return; }
+        try { await navigator.share({ files: [arquivo], text: texto }); return; } catch (e) { if (e.name === "AbortError") return; }
       }
       $("img-compartilhar").src = cv.toDataURL("image/png"); $("img-compartilhar").hidden = false; $("dica-compartilhar").hidden = false;
       $("img-compartilhar").scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   });
 
-  // ---- ranking geral (api/ranking.js): as 20 melhores médias ----
+  // ---------- grid da seletiva (api/ranking.js) ----------
   const API = "/api/ranking";
-  let salvo = null; // { apelido, ms, posicao } quando esta rodada entra no ranking
+  let salvo = null, fim = null;
+  const vaga = (pos) => pos === 1 ? "Piloto 1" : pos === 2 ? "Piloto 2" : pos <= 2 + PILOTOS_TESTE ? "piloto de teste" : null;
+  const fechada = () => !!fim && Date.now() > Date.parse(fim);
+  function mostrarForm() { $("g-form").hidden = fechada() || estado !== "fim" || !!salvo; }
 
-  function desenharRanking(top, meu) {
-    const ol = $("rk-lista"); ol.textContent = "";
-    for (const r of top) {
-      const li = document.createElement("li");
-      if (meu && r.apelido.toLowerCase() === meu.toLowerCase()) li.className = "eu";
-      const ap = document.createElement("span"); ap.className = "ap"; ap.textContent = r.apelido;
-      const ms = document.createElement("span"); ms.className = "ms"; ms.textContent = fmt(r.ms);
-      ms.style.color = `var(--${r.ms < 200 ? "roxo" : r.ms < 250 ? "verde" : "amarelo"})`; // mesmos cortes dos vereditos
-      li.append(ap, ms); ol.append(li);
-    }
-    if (!top.length) $("rk-msg").textContent = "Ninguém entrou ainda. Seja o primeiro!";
+  function pintarPrazo() {
+    if (!fim) { $("prazo").textContent = "A data de fechamento sai no próximo episódio. Salve sua melhor média até lá."; return; }
+    const quando = new Date(fim).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+    $("prazo").innerHTML = fechada() ? "<b>Seletiva encerrada.</b> O resultado sai no próximo episódio." : `Fecha em <b>${quando}</b> (Brasília).`;
   }
 
-  async function carregarRanking() {
+  function desenharGrid(top, meu) {
+    const ol = $("g-lista"); ol.textContent = "";
+    const corte = 2 + PILOTOS_TESTE;
+    top.forEach((r, i) => {
+      if (i === corte) { const c = document.createElement("li"); c.className = "g-corte"; c.setAttribute("aria-hidden", "true"); ol.append(c); }
+      const li = document.createElement("li");
+      li.className = (i < 2 ? "vaga" : i < corte ? "teste" : "") + (meu && r.insta === meu ? " eu" : "");
+      const ig = document.createElement("span"); ig.className = "ig"; ig.textContent = "@" + r.insta;
+      const selo = document.createElement("span");
+      if (i < corte) { selo.className = "selo" + (i < 2 ? "" : " t"); selo.textContent = i === 0 ? "P1" : i === 1 ? "P2" : "TESTE"; }
+      const ms = document.createElement("span"); ms.className = "ms"; ms.textContent = fmt(r.ms);
+      ms.style.color = `var(--${r.ms < 200 ? "roxo" : r.ms < 250 ? "verde" : "amarelo"})`;
+      li.append(ig, selo, ms); ol.append(li);
+    });
+    if (!top.length && !$("g-msg").textContent) $("g-msg").textContent = "O grid está vazio. A vaga de Piloto 1 é sua se você entrar agora.";
+  }
+
+  async function carregarGrid() {
     try {
       const r = await fetch(API), j = await r.json();
       if (!r.ok) throw new Error(j.erro);
-      desenharRanking(j.top, salvo && salvo.apelido);
-    } catch (e) { $("rk-msg").textContent = "O ranking não está disponível agora."; }
+      fim = j.fim; pintarPrazo(); mostrarForm();
+      desenharGrid(j.top, salvo && salvo.insta);
+    } catch (e) { $("g-msg").textContent = "O grid não está disponível agora."; }
   }
 
-  try { $("rk-apelido").value = localStorage.getItem("lg_apelido") || ""; } catch {}
-  $("rk-form").addEventListener("submit", async (e) => {
+  try { $("g-insta").value = localStorage.getItem("sel_insta") || ""; } catch {}
+  $("g-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const apelido = $("rk-apelido").value.trim(), btn = $("rk-salvar");
-    btn.disabled = true; $("rk-msg").textContent = "Salvando…";
+    const insta = $("g-insta").value.trim().replace(/^@+/, "").toLowerCase(), btn = $("g-salvar");
+    if (!/^[a-z0-9._]{1,30}$/.test(insta)) { $("g-msg").textContent = "Use só letras, números, ponto e _ (como no Instagram)."; return; }
+    btn.disabled = true; $("g-msg").textContent = "Entrando no grid…";
     try {
-      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ apelido, tempos: tempos.map((t) => Math.round(t.ms)) }) });
+      const vale = await rodada;
+      if (!vale) throw new Error("Não deu para validar a rodada. Confira a internet e faça outra.");
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ insta, rodada: vale, tempos: tempos.map((t) => Math.round(t.ms)) }) });
       const j = await r.json();
       if (!r.ok) throw new Error(j.erro || "Não deu para salvar.");
-      salvo = { apelido, ms: j.ms, posicao: j.posicao };
-      gravar("lg_apelido", apelido);
-      $("rk-form").hidden = true;
-      $("rk-msg").textContent = j.posicao ? `Você ficou em ${j.posicao}º lugar como ${apelido}.` : `Salvamos ${fmt(j.ms)} s como ${apelido}, mas ainda não deu para entrar no top 20.`;
-      desenharRanking(j.top, apelido);
-    } catch (err) { $("rk-msg").textContent = err.message || "Não deu para salvar."; btn.disabled = false; }
+      salvo = { insta, ...j };
+      gravar("sel_insta", insta);
+      mostrarForm();
+      const v = vaga(j.posicao), corte = 2 + PILOTOS_TESTE;
+      const melhorou = j.melhor === j.ms ? "" : ` Sua melhor média continua ${fmt(j.melhor)} s.`;
+      if (v) $("g-msg").textContent = `@${insta} está em ${j.posicao}º: hoje seria ${v}.${melhorou}`;
+      else {
+        const alvo = j.top[corte - 1];
+        $("g-msg").textContent = `@${insta} está em ${j.posicao}º.${melhorou}` + (alvo ? ` Para virar piloto de teste, faça abaixo de ${fmt(alvo.ms)} s.` : "");
+      }
+      desenharGrid(j.top, insta);
+    } catch (err) { $("g-msg").textContent = err.message || "Não deu para salvar."; btn.disabled = false; }
   });
 
-  $("intro-placar").addEventListener("click", () => {
-    $("intro").hidden = true;
-    $("rk-form").hidden = true; $("rk-msg").textContent = "";
-    $("placar-voltar").before($("rk"));
-    $("placar").hidden = false;
-    carregarRanking();
-  });
-  // o ranking só abre pela tela inicial, então «Voltar» volta para ela
+  // grid em tela cheia: abre da tela inicial ou pelo botão do rodapé (fora de uma rodada)
+  function abrirGrid(deIntro) {
+    if (deIntro) $("intro").hidden = true;
+    $("g-form").hidden = true; $("g-msg").textContent = "";
+    $("placar-voltar").before($("grid"));
+    $("placar").hidden = false; $("placar").dataset.volta = deIntro ? "intro" : "";
+    carregarGrid();
+  }
+  $("intro-placar").addEventListener("click", () => abrirGrid(true));
+  $("ver-grid").addEventListener("click", () => { if (estado === "parado") abrirGrid(false); });
   $("placar-voltar").addEventListener("click", () => {
     $("placar").hidden = true;
-    $("intro").hidden = false;
-    $("comecar").focus();
+    if ($("placar").dataset.volta === "intro") { $("intro").hidden = false; $("comecar").focus(); }
   });
 
   $("comecar").addEventListener("click", () => { $("intro").hidden = true; });
   $("comecar").focus();
-
   reiniciar();
 </script>

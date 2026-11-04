@@ -1,4 +1,4 @@
-// Armazenamento do ranking: Upstash Redis (grátis, instalado pelo Marketplace da Vercel).
+// Armazenamento da seletiva: Upstash Redis (grátis, instalado pelo Marketplace da Vercel).
 // Sem as variáveis de ambiente e fora da Vercel (teste local), usa a memória do processo.
 
 const URL_REDIS = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -6,6 +6,8 @@ const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TO
 
 export const configurado = Boolean(URL_REDIS && TOKEN);
 export const emMemoria = !configurado && !process.env.VERCEL;
+// chave para assinar as rodadas (não precisa de variável nova: reaproveita o token do banco)
+export const SEGREDO = process.env.SELETIVA_SEGREDO || TOKEN || "teste-local";
 
 // ---- Redis pela API REST (sem dependências) ----
 async function pipeline(comandos) {
@@ -23,47 +25,50 @@ async function pipeline(comandos) {
 }
 
 // ---- memória (só para testar no computador) ----
-const mem = { placar: new Map(), nomes: new Map(), cont: new Map() };
+const mem = { placar: new Map(), usadas: new Set(), cont: new Map() };
 
-const CHAVE = "largada:placar"; // sorted set: membro = apelido minúsculo, nota = média em ms
-const NOMES = "largada:nomes"; // hash: apelido minúsculo -> como a pessoa escreveu
+const CHAVE = "seletiva:placar"; // sorted set: membro = @ do Instagram (minúsculo), nota = média em ms
 
 export async function top(n) {
   if (emMemoria) {
-    return [...mem.placar.entries()]
-      .sort((a, b) => a[1] - b[1])
-      .slice(0, n)
-      .map(([k, ms]) => ({ apelido: mem.nomes.get(k), ms }));
+    return [...mem.placar.entries()].sort((a, b) => a[1] - b[1]).slice(0, n).map(([insta, ms]) => ({ insta, ms }));
   }
   const [lista] = await pipeline([["ZRANGE", CHAVE, "0", String(n - 1), "WITHSCORES"]]);
-  const chaves = [];
-  for (let i = 0; i < lista.length; i += 2) chaves.push([lista[i], Number(lista[i + 1])]);
-  if (!chaves.length) return [];
-  const [nomes] = await pipeline([["HMGET", NOMES, ...chaves.map((c) => c[0])]]);
-  return chaves.map(([k, ms], i) => ({ apelido: nomes[i] || k, ms }));
+  const out = [];
+  for (let i = 0; i < lista.length; i += 2) out.push({ insta: lista[i], ms: Number(lista[i + 1]) });
+  return out;
 }
 
-// guarda só se for a melhor média desse apelido; devolve a posição (1 = primeiro)
-export async function salvar(apelido, ms) {
-  const k = apelido.toLowerCase();
+// guarda só se for a melhor média desse @; devolve { posicao, melhor }
+export async function salvar(insta, ms) {
   if (emMemoria) {
-    const antes = mem.placar.get(k);
-    if (antes === undefined || ms < antes) mem.placar.set(k, ms);
-    mem.nomes.set(k, apelido);
-    const melhor = mem.placar.get(k);
-    return [...mem.placar.values()].filter((v) => v < melhor).length + 1;
+    const antes = mem.placar.get(insta);
+    if (antes === undefined || ms < antes) mem.placar.set(insta, ms);
+    const melhor = mem.placar.get(insta);
+    return { melhor, posicao: [...mem.placar.values()].filter((v) => v < melhor).length + 1 };
   }
-  const [, , pos] = await pipeline([
-    ["ZADD", CHAVE, "LT", String(ms), k], // LT: só troca se a nova média for menor
-    ["HSET", NOMES, k, apelido],
-    ["ZRANK", CHAVE, k],
+  const [, pos, melhor] = await pipeline([
+    ["ZADD", CHAVE, "LT", String(ms), insta], // LT: só troca se a nova média for menor
+    ["ZRANK", CHAVE, insta],
+    ["ZSCORE", CHAVE, insta],
   ]);
-  return Number(pos) + 1;
+  return { posicao: Number(pos) + 1, melhor: Number(melhor) };
+}
+
+// cada rodada assinada só pode ser salva uma vez
+export async function usarRodada(assinatura) {
+  if (emMemoria) {
+    if (mem.usadas.has(assinatura)) return false;
+    mem.usadas.add(assinatura);
+    return true;
+  }
+  const [ok] = await pipeline([["SET", `seletiva:rodada:${assinatura}`, "1", "NX", "EX", "7200"]]);
+  return ok === "OK";
 }
 
 // limite simples contra spam: N envios por minuto por IP
 export async function podeEnviar(ip, limite = 8) {
-  const k = `largada:ip:${ip}`;
+  const k = `seletiva:ip:${ip}`;
   if (emMemoria) {
     const n = (mem.cont.get(k) || 0) + 1;
     mem.cont.set(k, n);
