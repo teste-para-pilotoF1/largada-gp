@@ -89,7 +89,7 @@
   .cone { position: absolute; z-index: -1; top: 92%; left: 50%; width: 260%; height: 60vh; transform: translateX(-50%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, rgba(255,70,50,.38), rgba(255,70,50,0) 70%); opacity: 0; pointer-events: none; }
   .lampada.acesa .cone { opacity: 1; }
 
-  .meio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 8px 14px; }
+  .meio { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 8px 14px; }
   .cronometro { display: inline-flex; align-items: center; gap: 10px; background: rgba(10,14,32,.88); border: 3px solid #fff; border-radius: 18px; padding: 5px 20px 7px; box-shadow: var(--sombra); }
   .cronometro svg { width: clamp(28px, 7vw, 40px); height: auto; flex: none; }
   .tempo { font-weight: 900; font-size: clamp(44px, 13vw, 78px); line-height: 1; font-variant-numeric: tabular-nums; }
