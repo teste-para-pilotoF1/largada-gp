@@ -17,9 +17,9 @@ por segundo, espera sorteada de 0,2 a 3 s, tempo = `event.timeStamp` do toque �
 do quadro escuro. Abaixo de 100 ms ou com luz acesa = largada queimada (vale 1 s).
 
 ## Ajustes rápidos
-- `index.html`, topo do `<script>`: `EQUIPE` (nome da equipe), `PERFIL` (seu @ no card de story), `PILOTOS_TESTE`.
-- `api/ranking.js`: `FIM` = data e hora em que a seletiva fecha, horário de Brasília, ex. `"2026-11-15T20:00"`
-  (ou a variável de ambiente `SELETIVA_FIM` na Vercel). Depois do horário o grid para de aceitar entradas.
+- `index.html`, topo do `<script>`: `EQUIPE` (nome da equipe), `PERFIL` (@formula1explica no card de story), `PILOTOS_TESTE`.
+- `api/ranking.js`: `POSTADO` = hora em que o ep. 2 foi postado (Brasília), ex. `"2026-11-10T18:00"`; a seletiva fecha 24 h depois (`HORAS_ABERTA`). Também dá para usar a variável `SELETIVA_POSTADO` na Vercel.
+  No lançamento, trocar a chave `CHAVE` em `api/_banco.js` (ex. `seletiva:ep2:placar`) zera o grid dos testes.
 
 ## Como o grid se protege
 - Ao começar a rodada o site pede um "vale" assinado ao servidor; o grid só aceita a rodada com esse vale, uma vez só,

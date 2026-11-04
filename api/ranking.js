@@ -5,8 +5,10 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { configurado, emMemoria, podeEnviar, salvar, SEGREDO, top, usarRodada } from "./_banco.js";
 
-// ---- AJUSTE AQUI: data e hora em que a seletiva fecha (horário de Brasília). "" = sem data ainda ----
-const FIM = process.env.SELETIVA_FIM || "";
+// ---- AJUSTE AQUI: hora em que o ep. 2 foi postado (horário de Brasília), ex. "2026-11-10T18:00".
+// A seletiva fecha 24 h depois. "" = ainda não postado (sem prazo).
+const POSTADO = process.env.SELETIVA_POSTADO || "";
+const HORAS_ABERTA = 24;
 
 const TOP = 20;
 const LARGADAS = 5;
@@ -15,7 +17,8 @@ const MINIMO = 100; // abaixo disso ninguém reage, chutou
 const POR_LARGADA = 5000; // cada largada sem queimar leva pelo menos 5 s de luzes
 const VALIDADE = 2 * 3600 * 1000; // um vale de rodada vale 2 horas
 
-const fimMs = FIM ? Date.parse(FIM.includes("T") && !/[Z+-]\d\d:?\d\d$|Z$/.test(FIM) ? FIM + "-03:00" : FIM) : NaN;
+const postadoMs = POSTADO ? Date.parse(/(Z|[+-]\d\d:?\d\d)$/.test(POSTADO) ? POSTADO : POSTADO + "-03:00") : NaN;
+const fimMs = postadoMs + HORAS_ABERTA * 3600 * 1000; // NaN enquanto não postado
 const fechou = () => Number.isFinite(fimMs) && Date.now() > fimMs;
 
 const json = (dados, status = 200) =>

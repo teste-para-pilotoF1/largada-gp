@@ -288,14 +288,14 @@
       <button class="pilula primaria" id="comecar" type="button">Fazer o teste</button>
       <button class="pilula secundaria" id="intro-placar" type="button">Ver o grid</button>
     </div>
-    <p class="fino">Para valer, siga a página. Os primeiros colocados podem ter que gravar a tela fazendo o teste. Jogo de fã, sem ligação com a F1 ou a FIA. Inspirado no <a href="https://lightsout-gp.vercel.app/" target="_blank" rel="noopener">Lights Out GP</a>.</p>
+    <p class="fino">Para valer, siga <a href="https://www.instagram.com/formula1explica/" target="_blank" rel="noopener">@formula1explica</a>. Os primeiros colocados podem ter que gravar a tela fazendo o teste. Jogo de fã, sem ligação com a F1 ou a FIA. Inspirado no <a href="https://lightsout-gp.vercel.app/" target="_blank" rel="noopener">Lights Out GP</a>.</p>
   </div>
 </div>
 
 <script>
   // ---------- AJUSTE AQUI ----------
-  const EQUIPE = "equipe dos seguidores"; // troque quando a equipe ganhar nome
-  const PERFIL = "";                      // seu @ no card de postar ("" esconde)
+  const EQUIPE = "equipe dos seguidores"; // o nome ainda está sendo escolhido nos comentários do ep. 1
+  const PERFIL = "@formula1explica";      // aparece no card de story
   const PILOTOS_TESTE = 3;                // vagas de piloto de teste depois do Piloto 1 e 2
   // ---------------------------------
 
@@ -585,7 +585,7 @@
   function mostrarForm() { $("g-form").hidden = fechada() || estado !== "fim" || !!salvo; }
 
   function pintarPrazo() {
-    if (!fim) { $("prazo").textContent = "A data de fechamento sai no próximo episódio. Salve sua melhor média até lá."; return; }
+    if (!fim) { $("prazo").textContent = "A seletiva fica aberta por 24 horas depois que o ep. 2 sair. Salve sua melhor média até lá."; return; }
     const quando = new Date(fim).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
     $("prazo").innerHTML = fechada() ? "<b>Seletiva encerrada.</b> O resultado sai no próximo episódio." : `Fecha em <b>${quando}</b> (Brasília).`;
   }
