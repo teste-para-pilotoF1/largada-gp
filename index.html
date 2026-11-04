@@ -68,14 +68,15 @@
     display: grid; grid-template-rows: auto 1fr auto; justify-items: center;
     touch-action: manipulation; cursor: pointer; box-shadow: var(--sombra);
     background:
-      linear-gradient(180deg, transparent 0 74%, var(--chao) 74% 100%),
+      linear-gradient(180deg, transparent 0 72%, var(--chao) 72% 100%),
       repeating-linear-gradient(180deg, var(--parede) 0 26px, var(--tabua) 26px 29px);
   }
   /* porta de enrolar à esquerda e mural de cortiça à direita, como na garagem do ep. 1 */
   #palco::before { content: ""; position: absolute; z-index: -1; left: -6%; top: 22%; width: 38%; height: 52%; background: repeating-linear-gradient(180deg, #5d5a62 0 13px, #4a474f 13px 16px); border-radius: 0 6px 0 0; opacity: .8; }
-  #palco::after { content: ""; position: absolute; z-index: -1; right: 6%; top: 30%; width: 24%; height: 26%; background: var(--cortica); border-radius: 4px; box-shadow: inset 0 0 0 5px #8f5c31; opacity: .85; }
-  .papel { position: absolute; z-index: 0; right: 9%; top: 33%; width: 18%; letter-spacing: -.02em; aspect-ratio: 3 / 4; background: #f4efe1; transform: rotate(4deg); color: #1b1b22; font-size: clamp(6px, 1.7vw, 9px); font-weight: 900; text-align: center; line-height: 1.1; padding: 4px 2px; box-sizing: border-box; display: grid; place-items: center; }
-  .papel b { color: var(--vermelho); display: block; font-size: 1.2em; }
+  #palco::after { content: ""; position: absolute; z-index: -1; right: 5%; top: 24%; width: 34%; height: 25%; background: var(--cortica); border-radius: 4px; box-shadow: inset 0 0 0 5px #8f5c31; opacity: .85; }
+  .papel { position: absolute; z-index: 0; right: 9%; top: 25.5%; width: 26%; aspect-ratio: 4 / 3; background: #f4efe1; transform: rotate(3deg); color: #1b1b22; font-size: clamp(9px, 2.7vw, 14px); box-shadow: 0 3px 6px rgba(0,0,0,.35); font-weight: 900; text-align: center; line-height: 1.1; padding: 4px 2px; box-sizing: border-box; display: grid; place-items: center; }
+  .papel b { color: var(--vermelho); display: block; font-size: 1.25em; letter-spacing: -.02em; }
+  .papel::before { content: ""; position: absolute; top: 4px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--vermelho); }
   #palco.acesas { box-shadow: var(--sombra), inset 0 0 120px rgba(255,40,30,.22); }
 
   .lampadas { display: flex; justify-content: space-around; width: 100%; padding: 0 4%; box-sizing: border-box; position: relative; }
@@ -89,7 +90,7 @@
   .cone { position: absolute; z-index: -1; top: 92%; left: 50%; width: 260%; height: 60vh; transform: translateX(-50%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, rgba(255,70,50,.38), rgba(255,70,50,0) 70%); opacity: 0; pointer-events: none; }
   .lampada.acesa .cone { opacity: 1; }
 
-  .meio { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 8px 14px; }
+  .meio { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px; padding: 8px 14px 0; }
   .cronometro { display: inline-flex; align-items: center; gap: 10px; background: rgba(10,14,32,.88); border: 3px solid #fff; border-radius: 18px; padding: 5px 20px 7px; box-shadow: var(--sombra); }
   .cronometro svg { width: clamp(28px, 7vw, 40px); height: auto; flex: none; }
   .tempo { font-weight: 900; font-size: clamp(44px, 13vw, 78px); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -105,7 +106,7 @@
   .status .antes { display: block; font-size: 16px; color: rgba(255,255,255,.62); min-height: 1.2em; }
   .status .forte { display: block; font-size: 28px; text-shadow: 0 4px 14px rgba(0,0,0,.6); }
 
-  .kart { width: min(78%, 330px); height: auto; display: block; margin-bottom: 3%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+  .kart { width: min(76%, 320px); height: auto; display: block; margin: 6px 0 2%; filter: drop-shadow(0 10px 8px rgba(0,0,0,.45)); pointer-events: none; }
 
   /* ---------- cards brancos ---------- */
   .card { background: var(--card); color: var(--card-ink); border-radius: 22px; box-shadow: var(--sombra); --roxo: #7b2ff7; --verde: #0fa968; --amarelo: #c99a00; --queimou: var(--vermelho); }
@@ -200,7 +201,7 @@
   </header>
 
   <main id="palco" aria-live="polite">
-    <div class="papel" aria-hidden="true"><div><b>PROCURA-SE</b>roda dianteira<br>e piloto</div></div>
+    <div class="papel" aria-hidden="true"><div><b>PROCURA-SE</b>piloto<br>(e uma roda)</div></div>
     <div class="lampadas" aria-hidden="true"></div>
     <div class="meio">
       <div class="cronometro" id="cronometro">
@@ -209,22 +210,8 @@
       </div>
       <p class="status" id="status"></p>
     </div>
-    <!-- o kart enferrujado do ep. 1, ainda sem a roda da frente (apoiado num tijolo) -->
-    <svg class="kart" viewBox="0 0 300 120" aria-hidden="true">
-      <ellipse cx="150" cy="108" rx="130" ry="9" fill="rgba(0,0,0,.35)"/>
-      <rect x="22" y="44" width="40" height="30" rx="4" fill="#5a5d66"/><rect x="26" y="40" width="22" height="8" rx="2" fill="#7a7e88"/><path d="M22 52 h-10 v-12" stroke="#3a3d45" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <polygon points="40,78 250,78 268,66 270,84 40,90" fill="#6b3a24"/>
-      <polygon points="52,66 238,62 262,68 250,80 50,80" fill="#8a4b2f"/>
-      <polygon points="120,62 200,60 238,62 200,68 120,68" fill="#a8643c"/>
-      <polygon points="78,30 104,26 118,64 82,66" fill="#1d1d22"/><polygon points="80,34 100,30 112,62 86,63" fill="#2a2a31"/>
-      <path d="M150 64 L176 34" stroke="#2a2a31" stroke-width="5" stroke-linecap="round"/>
-      <ellipse cx="178" cy="32" rx="16" ry="6" fill="none" stroke="#1d1d22" stroke-width="5" transform="rotate(-25 178 32)"/>
-      <circle cx="72" cy="86" r="24" fill="#1b1b22"/><circle cx="72" cy="86" r="14" fill="#2c2c33"/><circle cx="72" cy="86" r="7" fill="#8d939d"/>
-      <circle cx="132" cy="92" r="16" fill="#1b1b22"/><circle cx="132" cy="92" r="6" fill="#8d939d"/>
-      <rect x="226" y="80" width="40" height="20" rx="2" fill="#b5523b"/><rect x="226" y="88" width="40" height="3" fill="#8e3d2b"/><rect x="244" y="80" width="3" height="8" fill="#8e3d2b"/><rect x="236" y="91" width="3" height="9" fill="#8e3d2b"/><rect x="254" y="91" width="3" height="9" fill="#8e3d2b"/>
-      <circle cx="190" cy="74" r="2" fill="#c97a4a"/><circle cx="104" cy="76" r="2.5" fill="#c97a4a"/><circle cx="214" cy="70" r="1.8" fill="#c97a4a"/>
-      <text x="160" y="77" font-family="Nunito" font-weight="900" font-size="11" fill="#f4efe1" opacity=".9">20</text>
-    </svg>
+    <!-- o kart enferrujado do ep. 1, sem a roda dianteira (render 3D da série: src/equipe/KartSite.tsx) -->
+    <img class="kart" src="kart.png" width="660" height="233" alt="" draggable="false">
 
     <section id="resultado" hidden>
       <div class="card ficha">
