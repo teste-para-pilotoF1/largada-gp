@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Seletiva de pilotos: a vaga está aberta</title>
-<meta name="description" content="O Rui foi buscar a roda e não voltou. Faça o teste de reflexo e dispute a vaga de piloto da equipe dos seguidores.">
+<title>Seletiva Vórtex: a vaga de piloto está aberta</title>
+<meta name="description" content="A roda voltou, mas o Rui não. Faça o teste de reflexo e dispute uma vaga de piloto na Vórtex Racing Team.">
 <meta name="theme-color" content="#070b1d">
-<meta property="og:title" content="Seletiva de pilotos: a vaga está aberta">
+<meta property="og:title" content="Seletiva Vórtex: a vaga de piloto está aberta">
 <meta property="og:description" content="As lâmpadas da garagem apagaram? Toca! Os mais rápidos viram os pilotos da equipe.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,9 +72,20 @@
       repeating-linear-gradient(180deg, var(--parede) 0 26px, var(--tabua) 26px 29px);
   }
   /* porta de enrolar à esquerda e mural de cortiça à direita, como na garagem do ep. 1 */
-  #palco::before { content: ""; position: absolute; z-index: -1; left: -6%; top: 22%; width: 38%; height: 52%; background: repeating-linear-gradient(180deg, #5d5a62 0 13px, #4a474f 13px 16px); border-radius: 0 6px 0 0; opacity: .8; }
+  #palco::before { content: ""; position: absolute; z-index: -1; left: -6%; top: 38%; width: 38%; height: 34%; background: repeating-linear-gradient(180deg, #5d5a62 0 13px, #4a474f 13px 16px); border-radius: 0 6px 0 0; opacity: .8; }
   #palco::after { content: ""; position: absolute; z-index: -1; right: 5%; top: 24%; width: 34%; height: 25%; background: var(--cortica); border-radius: 4px; box-shadow: inset 0 0 0 5px #8f5c31; opacity: .85; }
   .papel { position: absolute; z-index: 0; right: 9%; top: 25.5%; width: 26%; aspect-ratio: 4 / 3; background: #f4efe1; transform: rotate(3deg); color: #1b1b22; font-size: clamp(9px, 2.7vw, 14px); box-shadow: 0 3px 6px rgba(0,0,0,.35); font-weight: 900; text-align: center; line-height: 1.1; padding: 4px 2px; box-sizing: border-box; display: grid; place-items: center; }
+  /* placa da equipe em neon, igual à da porta no ep. 2 */
+  .placa { position: absolute; z-index: 0; left: 5%; top: 22.5%; width: 52%; display: flex; align-items: center; gap: 4%; padding: 2.2% 3%; box-sizing: border-box; background: linear-gradient(#1b1c24, #121319); border: 2px solid #2c2e3a; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,.45), 0 0 22px rgba(255,42,42,.28); filter: drop-shadow(0 0 5px rgba(255,42,42,.55)); animation: neon 1.4s steps(1) 1 both; }
+  .placa .redemoinho { width: 22%; flex: none; overflow: visible; }
+  .placa .redemoinho g { transform-origin: center; animation: gira 7s linear infinite; }
+  .placa > div { display: flex; flex-direction: column; align-items: flex-start; line-height: .92; min-width: 0; }
+  .placa .vx { padding: .14em .06em 0 0; line-height: 1; font-weight: 900; font-style: italic; font-size: clamp(17px, 5.6vw, 30px); letter-spacing: .02em; transform: skewX(-10deg); background: linear-gradient(#ffffff 45%, #ffb3b3 60%, #ff2a2a); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: 1px #7a0a0e; }
+  .placa .rt { display: flex; align-items: center; gap: 4px; font-weight: 900; font-size: clamp(5.5px, 1.6vw, 9px); letter-spacing: .2em; color: #fff; margin-top: 2px; white-space: nowrap; }
+  .placa .rt i { width: 1.6em; height: 2px; background: #ff2a2a; }
+  @keyframes gira { to { transform: rotate(-360deg); } }
+  @keyframes neon { 0% { opacity: .15; } 10% { opacity: 1; } 18% { opacity: .2; } 26% { opacity: 1; } 34% { opacity: .35; } 42%, 100% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .placa, .placa .redemoinho g { animation: none; } }
   .papel b { color: var(--vermelho); display: block; font-size: 1.25em; letter-spacing: -.02em; }
   .papel::before { content: ""; position: absolute; top: 4px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--vermelho); }
   #palco.acesas { box-shadow: var(--sombra), inset 0 0 120px rgba(255,40,30,.22); }
@@ -196,12 +207,13 @@
       <span class="tag amarela">Vaga aberta</span>
       <button class="chip" id="som" type="button" aria-pressed="true">🔊</button>
     </div>
-    <h1><span class="antes">o rui foi buscar a roda e não voltou.</span><span class="forte">quem vai pilotar?</span></h1>
+    <h1><span class="antes">a roda voltou. o rui, não.</span><span class="forte">quem vai pilotar?</span></h1>
     <div class="pips"><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><span class="contador" id="contador">Largada 1/5</span></div>
   </header>
 
   <main id="palco" aria-live="polite">
-    <div class="papel" aria-hidden="true"><div><b>PROCURA-SE</b>piloto<br>(e uma roda)</div></div>
+    <div class="placa" aria-hidden="true"><svg class="redemoinho" viewBox="-50 -50 100 100"><g><path d="M 0 -40 A 40 40 0 0 1 34.6 20" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/><path d="M 0 -40 A 40 40 0 0 1 34.6 20" transform="rotate(120)" fill="none" stroke="#ff2a2a" stroke-width="11" stroke-linecap="round"/><path d="M 0 -40 A 40 40 0 0 1 34.6 20" transform="rotate(240)" fill="none" stroke="#ff2a2a" stroke-width="8" stroke-linecap="round"/><path d="M 0 -20 A 20 20 0 0 1 17.3 10" transform="rotate(60)" fill="none" stroke="#ff8a8a" stroke-width="8" stroke-linecap="round"/><path d="M 0 -20 A 20 20 0 0 1 17.3 10" transform="rotate(180)" fill="none" stroke="#ff8a8a" stroke-width="8" stroke-linecap="round"/><path d="M 0 -20 A 20 20 0 0 1 17.3 10" transform="rotate(300)" fill="none" stroke="#ff8a8a" stroke-width="8" stroke-linecap="round"/></g></svg><div><div class="vx">VÓRTEX</div><div class="rt"><i></i>RACING TEAM<i></i></div></div></div>
+    <div class="papel" aria-hidden="true"><div><b>PROCURA-SE</b>pilotos<br>(5 vagas)</div></div>
     <div class="lampadas" aria-hidden="true"></div>
     <div class="meio">
       <div class="cronometro" id="cronometro">
@@ -210,8 +222,8 @@
       </div>
       <p class="status" id="status"></p>
     </div>
-    <!-- o kart enferrujado do ep. 1, sem a roda dianteira (render 3D da série: src/equipe/KartSite.tsx) -->
-    <img class="kart" src="kart.png" width="660" height="233" alt="" draggable="false">
+    <!-- o kart arrumado do fim do ep. 2, nas cores da Vórtex (render 3D da série: src/equipe/KartSite.tsx) -->
+    <img class="kart" src="kart.png?v=2" width="660" height="257" alt="" draggable="false">
 
     <section id="resultado" hidden>
       <div class="card ficha">
@@ -265,7 +277,7 @@
       </div>
       <div id="intro-avatar"></div>
     </div>
-    <p>O Rui foi buscar a roda e não voltou. A <b id="nome-equipe">equipe dos seguidores</b> precisa de gente no volante: <b>Piloto 1</b>, <b>Piloto 2</b> e <b>pilotos de teste</b>.</p>
+    <p>A roda voltou, mas o Rui não. A <b id="nome-equipe">Vórtex</b> precisa de gente no volante: <b>Piloto 1</b>, <b>Piloto 2</b> e <b>pilotos de teste</b>.</p>
     <ul class="fatos">
       <li><b class="n">1</b><span>As 5 lâmpadas da garagem acendem, uma por segundo. Quando todas apagarem, toque na tela (no computador, barra de espaço). Cada rodada tem 5 largadas.</span></li>
       <li><b class="n">2</b><span>Tocou com a luz acesa? Largada queimada: vale 1 segundo na sua média.</span></li>
@@ -281,7 +293,7 @@
 
 <script>
   // ---------- AJUSTE AQUI ----------
-  const EQUIPE = "equipe dos seguidores"; // o nome ainda está sendo escolhido nos comentários do ep. 1
+  const EQUIPE = "Vórtex";               // nome dado pelo Nando no ep. 2
   const PERFIL = "@formula1explica";      // aparece no card de story
   const PILOTOS_TESTE = 3;                // vagas de piloto de teste depois do Piloto 1 e 2
   // ---------------------------------
@@ -446,7 +458,7 @@
     [400, "Mecânico", "bone", "Mão boa na chave de roda. O volante ainda pede um pouco mais."],
     [479, "Auxiliar de equipe", "caixa", "Sem você nada sai da garagem. O volante ainda está longe."],
     [515, "Equipe de marketing", "celular", "Reflexo de story: posta o resultado e chama a galera."],
-    [Infinity, "Buscar a roda", "roda", "Leva uma lanterna. O Rui também foi e não voltou."],
+    [Infinity, "Buscar a roda", "roda", "Leva uma lanterna. Foi assim que o Rui sumiu."],
   ];
   const funcaoDe = (ms) => FUNCOES.find((f) => ms < f[0]);
   const mediaRodada = () => tempos.reduce((s, t) => s + t.ms, 0) / LARGADAS;
@@ -536,7 +548,7 @@
       g.fillStyle = "#f4f4f4"; g.beginPath(); g.roundRect(x - 84, 186, 168, 12, 6); g.fill();
       g.fillStyle = "#5a5660"; g.beginPath(); g.ellipse(x, 214, 24, 22, 0, 0, 7); g.fill();
     }
-    pilulaCanvas(g, 80, 330, "• SELETIVA DE PILOTOS", "#d7191f", "#fff", 42);
+    pilulaCanvas(g, 80, 330, "• SELETIVA VÓRTEX", "#d7191f", "#fff", 42);
     g.fillStyle = "rgba(255,255,255,.6)"; g.font = "800 50px Nunito"; g.fillText("minha média em 5 largadas", 80, 520);
     g.fillStyle = "#fff"; g.font = "900 230px Nunito"; g.shadowColor = "rgba(0,0,0,.5)"; g.shadowBlur = 24; g.fillText(fmt(mediaRodada()) + " s", 64, 740); g.shadowBlur = 0;
     g.fillStyle = "rgba(255,255,255,.6)"; g.font = "800 44px Nunito"; g.fillText("na equipe eu seria", 80, 850);
