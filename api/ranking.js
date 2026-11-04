@@ -6,7 +6,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { anotar, configurado, emMemoria, podeEnviar, remover, salvar, SEGREDO, top, usarRodada } from "./_banco.js";
 
 // Tirados da seletiva: rodadas de robô (5 cliques cravados no limite de 0,100 s). Auditoria em /api/suspeitos.
-const TIRADOS = new Set(["tln_tavares", "iamthereis", "enzomichelin_", "dexsyze", "vitoorg__", "_jlreis", "_jluisreis", "aires_07"]);
+const TIRADOS = new Set(["tln_tavares", "iamthereis", "enzomichelin_", "dexsyze", "vitoorg__", "_jlreis", "_jluisreis", "aires_07", "gusta.mcastro"]);
 let limpeza = null; // tira do banco uma vez por instância; se falhar, o grid segue normal e tenta de novo no próximo pedido
 const limpar = () => (limpeza ||= remover([...TIRADOS]).catch((e) => { limpeza = null; console.error("limpeza", e); }));
 
@@ -59,6 +59,9 @@ function robo(t) {
   const media = t.reduce((s, x) => s + x, 0) / LARGADAS;
   if (media < MEDIA_MINIMA) return true;
   if (t.filter((ms) => ms < RAPIDA_DEMAIS).length >= 3) return true; // uma ou duas por sorte, ok; três, não
+  // 4 das 5 largadas dentro de 6 ms (robô ajustado para variar só uma: 118, 135, 135, 134, 134)
+  const limpos = t.filter((ms) => ms !== PENALIDADE).sort((a, b) => a - b);
+  if (media < 250) for (let i = 0; i + 3 < limpos.length; i++) if (limpos[i + 3] - limpos[i] <= 6) return true;
   // só com as 5 limpas e média de grid (com menos tempos, um humano cai nisso por sorte com mais frequência)
   return media < 250 && !t.includes(PENALIDADE) && Math.max(...t) - Math.min(...t) < VARIACAO_MINIMA;
 }
