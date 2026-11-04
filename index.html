@@ -122,12 +122,12 @@
   .card { background: var(--card); color: var(--card-ink); border-radius: 22px; box-shadow: var(--sombra); --roxo: #7b2ff7; --verde: #0fa968; --amarelo: #c99a00; --queimou: var(--vermelho); }
   .rotulo { font-weight: 900; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--vermelho); }
 
-  #resultado { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; gap: 12px; padding: 12px; cursor: default; overflow-y: auto; background: rgba(7,11,29,.86); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-  .ficha { padding: 18px 18px 20px; display: grid; gap: 12px; }
-  .ficha-topo { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center; }
+  #resultado { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; gap: 12px; padding: 12px; cursor: default; overflow-y: auto; overflow-x: hidden; background: rgba(7,11,29,.86); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .ficha { padding: 18px 18px 20px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .ficha-topo { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; align-items: center; }
   .ficha-topo .avatar { width: 92px; height: auto; background: #eef0f6; border-radius: 18px; display: block; }
   .ficha .seria { font-size: 13px; color: var(--card-apagado); font-weight: 800; }
-  .funcao { justify-self: start; font-size: clamp(18px, 5.4vw, 24px); text-transform: none; letter-spacing: 0; padding: 6px 12px; margin: 3px 0 6px; }
+  .funcao { justify-self: start; max-width: 100%; white-space: normal; line-height: 1.15; font-size: clamp(16px, 4.8vw, 24px); text-transform: none; letter-spacing: 0; padding: 6px 12px; margin: 3px 0 6px; }
   .media { font-weight: 900; font-size: clamp(44px, 13vw, 64px); line-height: .9; font-variant-numeric: tabular-nums; }
   .media small { font-size: .38em; opacity: .55; margin-left: 4px; }
   .nota { font-size: 14px; color: var(--card-apagado); line-height: 1.4; margin: 0; font-weight: 700; }
