@@ -35,3 +35,9 @@ do quadro escuro. Abaixo de 100 ms ou com luz acesa = largada queimada (vale 1 s
 - `dev.mjs` — servidor local: `node dev.mjs` → http://localhost:3005
 
 Banco: Upstash for Redis (plano Free) ligado pelo painel da Vercel (Storage). Variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN`.
+
+## Números (mini analytics)
+- Painel: `/numeros/` (só números somados, sem IP nem nada pessoal; fica fora do Google com noindex).
+- O site manda eventos sem esperar resposta (`api/evento.js`): entrada (país/estado/cidade pelos cabeçalhos da Vercel, aparelho, app), início e fim de rodada, salvou no grid, card de story, abriu o grid, tempo com a página visível.
+- Cada evento é 1 linha na lista `seletiva:ep2:eventos` do Upstash; `api/numeros.js` soma tudo na hora (cache de 60 s).
+- "@ no grid" e "função de quem está no grid" vêm do placar e contam desde a abertura; o resto conta desde que o analytics entrou no ar.

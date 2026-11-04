@@ -14,6 +14,7 @@ const TOP = 20;
 const LARGADAS = 5;
 const PENALIDADE = 1000; // largada queimada vale 1 s
 const MINIMO = 100; // abaixo disso ninguém reage, chutou
+const LENTO = 10_000; // reação limpa mais lenta que ainda vale (distraído, mas jogou)
 const POR_LARGADA = 5000; // cada largada sem queimar leva pelo menos 5 s de luzes
 const VALIDADE = 2 * 3600 * 1000; // um vale de rodada vale 2 horas
 
@@ -79,7 +80,7 @@ export async function POST(request) {
   const valido =
     Array.isArray(t) &&
     t.length === LARGADAS &&
-    t.every((ms) => Number.isFinite(ms) && (ms === PENALIDADE || (ms >= MINIMO && ms < PENALIDADE)));
+    t.every((ms) => Number.isFinite(ms) && ms >= MINIMO && ms <= LENTO); // queimada = 1000; limpa = de 0,1 a 10 s
   if (!valido) return json({ erro: "Esses tempos não batem com uma rodada de verdade." }, 400);
 
   const sig = conferirRodada(corpo?.rodada, t.filter((ms) => ms !== PENALIDADE).length);

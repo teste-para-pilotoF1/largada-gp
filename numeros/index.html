@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Números da Seletiva</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+  :root {
+    --noite: #070b1d; --painel: #0f1433; --painel2: #151b42; --linha: rgba(255,255,255,.1);
+    --ink: #fff; --ink2: rgba(255,255,255,.72); --apagado: rgba(255,255,255,.5);
+    --vermelho: #d7191f; --barra: #ffd84d; --trilho: rgba(255,255,255,.07); --roxo: #b388ff;
+    --fonte: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--noite); color: var(--ink); font: 600 15px/1.4 var(--fonte); }
+  main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 60px; }
+  .pilula { display: inline-block; background: var(--vermelho); color: #fff; font-weight: 900; font-size: 12px; letter-spacing: .06em; padding: 5px 12px; border-radius: 99px; }
+  h1 { font-size: clamp(26px, 6vw, 40px); font-weight: 900; line-height: 1.05; margin: 12px 0 6px; }
+  h1 span { color: var(--apagado); }
+  .sub { color: var(--apagado); margin: 0 0 22px; }
+  h2 { font-size: 13px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--apagado); margin: 0 0 14px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--painel); border: 1px solid var(--linha); border-radius: 14px; padding: 14px; }
+  .kpi b { display: block; font-size: clamp(24px, 5vw, 32px); font-weight: 900; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .kpi span { color: var(--ink2); font-size: 13px; }
+  .kpi small { display: block; color: var(--apagado); font-size: 12px; margin-top: 2px; }
+  .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .card { background: var(--painel); border: 1px solid var(--linha); border-radius: 16px; padding: 18px; min-width: 0; }
+  .card.largo { grid-column: 1 / -1; }
+  .lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .lista li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; }
+  .lista .nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink2); }
+  .lista .val { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .lista .val small { color: var(--apagado); font-weight: 700; margin-left: 4px; }
+  .lista .trilho { grid-column: 1 / -1; height: 8px; background: var(--trilho); border-radius: 4px; }
+  .lista .trilho i { display: block; height: 100%; min-width: 2px; background: var(--barra); border-radius: 4px; }
+  .vazio { color: var(--apagado); margin: 0; }
+  .grafico { position: relative; }
+  .grafico svg { display: block; width: 100%; height: 190px; overflow: visible; }
+  .grafico .eixo { fill: var(--apagado); font: 700 11px var(--fonte); }
+  .grafico .base { stroke: var(--linha); }
+  .grafico rect.b { fill: var(--barra); }
+  .grafico rect.alvo { fill: transparent; }
+  .grafico rect.alvo:hover + rect.b, .grafico g:hover rect.b { fill: #fff0a8; }
+  .dica { position: absolute; pointer-events: none; background: #fff; color: #1b1b22; font-weight: 800; font-size: 13px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -110%); box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+  .publi { background: linear-gradient(135deg, #1c2257, #2a1030); border: 1px solid rgba(255,216,77,.35); }
+  .publi p { margin: 0 0 12px; font-size: 16px; line-height: 1.55; white-space: pre-line; }
+  button { font: 900 14px var(--fonte); background: var(--barra); color: #1b1b22; border: 0; border-radius: 99px; padding: 10px 18px; cursor: pointer; }
+  button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .nota { color: var(--apagado); font-size: 12px; margin: 10px 0 0; }
+  .erro { background: #3a0d12; border: 1px solid #ff4d55; border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+</style>
+<main>
+  <span class="pilula">• SELETIVA VÓRTEX</span>
+  <h1>Números do site <span>da seletiva</span></h1>
+  <p class="sub" id="sub">Carregando…</p>
+  <div id="erro" class="erro" hidden></div>
+
+  <section class="kpis" id="kpis"></section>
+
+  <div class="grade">
+    <section class="card publi largo">
+      <h2>Resumo para mostrar numa publi</h2>
+      <p id="resumo">…</p>
+      <button id="copiar" type="button">Copiar resumo</button>
+    </section>
+
+    <section class="card largo">
+      <h2>Visitas por hora (Brasília)</h2>
+      <div class="grafico" id="horas"></div>
+    </section>
+
+    <section class="card">
+      <h2>Do clique ao story</h2>
+      <ul class="lista" id="funil"></ul>
+      <p class="nota">Pessoas diferentes em cada passo. A % compara com quem abriu o site.</p>
+    </section>
+    <section class="card">
+      <h2>Estados (Brasil)</h2>
+      <ul class="lista" id="estados"></ul>
+    </section>
+    <section class="card">
+      <h2>Cidades</h2>
+      <ul class="lista" id="cidades"></ul>
+    </section>
+    <section class="card">
+      <h2>Países</h2>
+      <ul class="lista" id="paises"></ul>
+    </section>
+    <section class="card">
+      <h2>De onde abriram</h2>
+      <ul class="lista" id="apps"></ul>
+      <p class="nota">"Instagram" = abriu pelo navegador de dentro do app.</p>
+    </section>
+    <section class="card">
+      <h2>Aparelho</h2>
+      <ul class="lista" id="aparelhos"></ul>
+      <h2 style="margin-top:18px">Sistema</h2>
+      <ul class="lista" id="sistemas"></ul>
+    </section>
+
+    <section class="card largo">
+      <h2>Reações em cada largada (ms)</h2>
+      <div class="grafico" id="hist"></div>
+      <p class="nota" id="hist-nota"></p>
+    </section>
+    <section class="card">
+      <h2>Função das rodadas jogadas</h2>
+      <ul class="lista" id="funcoes-rod"></ul>
+    </section>
+    <section class="card">
+      <h2>Função de quem está no grid</h2>
+      <ul class="lista" id="funcoes-grid"></ul>
+      <p class="nota">Pela melhor média de cada @. Conta desde a abertura da seletiva.</p>
+    </section>
+    <section class="card">
+      <h2>Rodadas por pessoa</h2>
+      <ul class="lista" id="por-pessoa"></ul>
+      <p class="nota" id="por-pessoa-nota"></p>
+    </section>
+  </div>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const nf = new Intl.NumberFormat("pt-BR");
+  const n = (x) => nf.format(x || 0);
+  const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0) + "%";
+  const seg = (s) => !s ? "—" : s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
+  const fmtS = (ms) => ms == null ? "—" : (ms / 1000).toFixed(3).replace(".", ",") + " s";
+  const quando = (ts) => new Date(ts).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const UF = { AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia", CE: "Ceará", DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás", MA: "Maranhão", MT: "Mato Grosso", MS: "Mato Grosso do Sul", MG: "Minas Gerais", PA: "Pará", PB: "Paraíba", PR: "Paraná", PE: "Pernambuco", PI: "Piauí", RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RS: "Rio Grande do Sul", RO: "Rondônia", RR: "Roraima", SC: "Santa Catarina", SP: "São Paulo", SE: "Sergipe", TO: "Tocantins" };
+  let paisNome = (c) => c;
+  try { const d = new Intl.DisplayNames(["pt-BR"], { type: "region" }); paisNome = (c) => { try { return c === "?" ? "Desconhecido" : d.of(c); } catch { return c; } }; } catch {}
+
+  function lista(id, pares, { total, nome = (x) => x, limite = 10 } = {}) {
+    const ul = $(id); ul.textContent = "";
+    if (!pares.length) { ul.innerHTML = '<li class="vazio">Ainda sem dados.</li>'; return; }
+    const soma = total ?? pares.reduce((s, p) => s + p[1], 0), max = Math.max(...pares.map((p) => p[1]), 1);
+    let itens = pares.slice(0, limite);
+    if (pares.length > limite) itens.push(["Outros", pares.slice(limite).reduce((s, p) => s + p[1], 0), true]);
+    for (const [k, v, outros] of itens) {
+      const li = document.createElement("li");
+      const a = document.createElement("span"); a.className = "nome"; a.textContent = outros ? k : nome(k); a.title = a.textContent;
+      const b = document.createElement("span"); b.className = "val"; b.innerHTML = `${n(v)}<small>${pct(v, soma)}</small>`;
+      const t = document.createElement("span"); t.className = "trilho"; t.innerHTML = `<i style="width:${(v / max) * 100}%"></i>`;
+      li.append(a, b, t); ul.append(li);
+    }
+  }
+
+  // gráfico de colunas simples (uma série), com dica ao passar o dedo/mouse
+  function colunas(id, pontos, { rotulo, dica, cada = 1 }) {
+    const box = $(id); box.textContent = "";
+    if (!pontos.length) { box.innerHTML = '<p class="vazio">Ainda sem dados.</p>'; return; }
+    const W = 1000, H = 190, base = 165, topo = 12, max = Math.max(...pontos.map((p) => p[1]), 1);
+    const passo = W / pontos.length, larg = Math.min(48, Math.max(2, passo - 2));
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("preserveAspectRatio", "none");
+    svg.innerHTML = `<line class="base" x1="0" x2="${W}" y1="${base}" y2="${base}"/>`;
+    const tip = document.createElement("div"); tip.className = "dica"; tip.hidden = true;
+    pontos.forEach(([k, v], i) => {
+      const g = document.createElementNS(ns, "g");
+      const h = (v / max) * (base - topo), x = i * passo + (passo - larg) / 2;
+      g.innerHTML = `<rect class="alvo" x="${i * passo}" y="0" width="${passo}" height="${H}"/><rect class="b" x="${x}" y="${base - h}" width="${larg}" height="${Math.max(h, v ? 2 : 0)}" rx="${Math.min(4, larg / 2)}"/>`;
+      g.addEventListener("pointerenter", () => {
+        tip.textContent = dica(k, v); tip.hidden = false;
+        const r = box.getBoundingClientRect();
+        tip.style.left = Math.min(Math.max(((i + .5) / pontos.length) * r.width, 70), r.width - 70) + "px";
+        tip.style.top = (base - h) / H * r.height + "px";
+      });
+      g.addEventListener("pointerleave", () => { tip.hidden = true; });
+      svg.append(g);
+    });
+    // rótulos do eixo em HTML para não esticar com o viewBox
+    const eixo = document.createElement("div");
+    eixo.style.cssText = "position:relative;height:16px;margin-top:-22px";
+    pontos.forEach(([k], i) => {
+      if (i % cada) return;
+      const s = document.createElement("span"); s.className = "eixo";
+      s.style.cssText = `position:absolute;left:${((i + .5) / pontos.length) * 100}%;transform:translateX(-50%);color:var(--apagado);font-size:11px;font-weight:700;white-space:nowrap`;
+      s.textContent = rotulo(k); eixo.append(s);
+    });
+    box.append(svg, eixo, tip);
+  }
+
+  function preencherHoras(porHora) {
+    if (!porHora.length) return colunas("horas", [], {});
+    // completa as horas sem visita entre a primeira e a última
+    const mapa = new Map(porHora), pts = [];
+    const ini = Date.parse(porHora[0][0] + ":00:00Z"), fim = Date.parse(porHora[porHora.length - 1][0] + ":00:00Z");
+    for (let t = ini; t <= fim; t += 3600e3) { const k = new Date(t).toISOString().slice(0, 13); pts.push([k, mapa.get(k) || 0]); }
+    const cada = Math.max(1, Math.ceil(pts.length / 8));
+    colunas("horas", pts, {
+      cada,
+      rotulo: (k) => k.slice(11, 13) === "00" || pts.length <= 24 ? `${k.slice(8, 10)}/${k.slice(5, 7)} ${k.slice(11, 13)}h` : `${k.slice(11, 13)}h`,
+      dica: (k, v) => `${k.slice(8, 10)}/${k.slice(5, 7)} ${k.slice(11, 13)}h · ${n(v)} visita${v === 1 ? "" : "s"}`,
+    });
+  }
+
+  let textoResumo = "";
+  function desenhar(d) {
+    $("sub").textContent = d.desde ? `Contando desde ${quando(d.desde)} · atualizado ${quando(d.agora)} · atualiza sozinho a cada minuto` : "Ainda não chegou nenhuma visita.";
+    const r = d.rodadas, g = d.grid;
+    const kpis = [
+      [n(d.pessoas), "pessoas", `${n(d.voltaram)} voltaram depois`],
+      [n(d.visitas), "visitas", d.pessoas ? `${(d.visitas / d.pessoas).toFixed(1).replace(".", ",")} por pessoa` : ""],
+      [seg(d.tempo.medio), "tempo médio no site", `metade ficou mais de ${seg(d.tempo.mediana)}`],
+      [n(d.tempo.totalHoras) + " h", "de atenção somada", "tempo com o site aberto na tela"],
+      [n(r.completas), "rodadas completas", `${n(r.largadas)} largadas`],
+      [n(g.inscritos), "@ no grid", "inscritos desde a abertura"],
+      [n(d.stories), "cards de story gerados", ""],
+      [fmtS(g.lider && g.lider.ms), "melhor média", g.lider ? "@" + g.lider.insta : ""],
+      [fmtS(r.melhorReacao), "melhor largada", `mediana ${fmtS(r.reacaoMediana)}`],
+      [pct(r.queimadas, r.largadas), "largadas queimadas", `${n(r.queimadas)} no total`],
+    ];
+    $("kpis").innerHTML = kpis.map(([v, t, s]) => `<div class="kpi"><b>${v}</b><span>${t}</span>${s ? `<small>${s}</small>` : ""}</div>`).join("");
+
+    const topEstados = d.estados.slice(0, 3).map(([u]) => UF[u] || u).join(", ");
+    const insta = d.apps.find(([a]) => a === "Instagram");
+    textoResumo =
+      `Seletiva Vórtex (teste de reflexo da série da equipe dos seguidores, @formula1explica)\n` +
+      `• ${n(d.pessoas)} pessoas e ${n(d.visitas)} visitas${d.desde ? " desde " + quando(d.desde) : ""}\n` +
+      `• ${n(r.completas)} rodadas completas (${n(r.largadas)} largadas) e ${n(g.inscritos)} @ inscritos no grid\n` +
+      `• tempo médio no site: ${seg(d.tempo.medio)} (${n(d.tempo.totalHoras)} h de atenção somadas)\n` +
+      `• ${n(d.stories)} cards de story gerados para compartilhar` +
+      (insta ? `\n• ${pct(insta[1], d.pessoas)} chegaram direto pelo Instagram` : "") +
+      (topEstados ? `\n• mais acessos em ${topEstados}` : "");
+    $("resumo").textContent = textoResumo;
+
+    preencherHoras(d.porHora);
+    const abriu = d.funil[0][1];
+    lista("funil", d.funil, { total: abriu });
+    lista("estados", d.estados, { nome: (u) => UF[u] || u || "Desconhecido" });
+    lista("cidades", d.cidades);
+    lista("paises", d.paises, { nome: paisNome, limite: 6 });
+    lista("apps", d.apps);
+    lista("aparelhos", d.aparelhos);
+    lista("sistemas", d.sistemas);
+    lista("funcoes-rod", r.funcoes.filter((p) => p[1]), { limite: 7 });
+    lista("funcoes-grid", g.funcoes.filter((p) => p[1]), { limite: 7 });
+    lista("por-pessoa", r.faixas.filter((p) => p[1]), { total: r.jogadores });
+    $("por-pessoa-nota").textContent = r.jogadores ? `Média de ${String(r.porJogador).replace(".", ",")} rodadas por pessoa. Quem mais jogou fez ${n(r.recordista)}.` : "";
+    colunas("hist", r.histograma, {
+      cada: Math.max(1, Math.ceil(r.histograma.length / 10)),
+      rotulo: (b) => b >= 600 ? "600+" : String(b),
+      dica: (b, v) => `${b >= 600 ? "600 ms ou mais" : `${b} a ${b + 19} ms`} · ${n(v)} largada${v === 1 ? "" : "s"}`,
+    });
+    $("hist-nota").textContent = r.largadas ? `Sem contar as queimadas. Metade das largadas foi mais rápida que ${fmtS(r.reacaoMediana)}.` : "";
+  }
+
+  async function carregar() {
+    try {
+      const resp = await fetch("/api/numeros"), d = await resp.json();
+      if (!resp.ok) throw new Error(d.erro || "Erro");
+      $("erro").hidden = true; desenhar(d);
+    } catch (e) { $("erro").hidden = false; $("erro").textContent = "Não deu para carregar os números agora. Tenta de novo em um minuto."; }
+  }
+  $("copiar").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(textoResumo); $("copiar").textContent = "Copiado!"; }
+    catch { const s = getSelection(), rg = document.createRange(); rg.selectNodeContents($("resumo")); s.removeAllRanges(); s.addRange(rg); $("copiar").textContent = "Selecionado: copie"; }
+    setTimeout(() => { $("copiar").textContent = "Copiar resumo"; }, 2000);
+  });
+  carregar();
+  setInterval(carregar, 60_000);
+</script>

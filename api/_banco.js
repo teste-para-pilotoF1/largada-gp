@@ -67,7 +67,7 @@ export async function usarRodada(assinatura) {
 }
 
 // limite simples contra spam: N envios por minuto por IP
-export async function podeEnviar(ip, limite = 8) {
+export async function podeEnviar(ip, limite = 30) { // 30: no 4G muita gente sai pelo mesmo IP
   const k = `seletiva:ip:${ip}`;
   if (emMemoria) {
     const n = (mem.cont.get(k) || 0) + 1;
@@ -77,4 +77,37 @@ export async function podeEnviar(ip, limite = 8) {
   }
   const [n] = await pipeline([["INCR", k], ["EXPIRE", k, "60", "NX"]]);
   return Number(n) <= limite;
+}
+
+// ---- mini analytics (só acrescenta; nada acima depende disto) ----
+// Cada acontecimento vira uma linha JSON numa lista: 1 comando por evento, conta feita na hora de ler.
+const EVENTOS = "seletiva:ep2:eventos";
+mem.ev = [];
+
+export async function anotar(registro) {
+  if (emMemoria) { mem.ev.push(JSON.stringify(registro)); return; }
+  await pipeline([["RPUSH", EVENTOS, JSON.stringify(registro)]]);
+}
+
+export async function eventos() {
+  if (emMemoria) return mem.ev.map((x) => JSON.parse(x));
+  const [n] = await pipeline([["LLEN", EVENTOS]]);
+  const fatias = [];
+  for (let i = 0; i < n; i += 2000) fatias.push(["LRANGE", EVENTOS, String(i), String(Math.min(n, i + 2000) - 1)]);
+  const out = [];
+  for (let i = 0; i < fatias.length; i += 5) {
+    for (const lista of await pipeline(fatias.slice(i, i + 5))) for (const x of lista) { try { out.push(JSON.parse(x)); } catch {} }
+  }
+  return out;
+}
+
+// quem está no grid (vale desde o começo, mesmo antes do analytics): total e quantos em cada função
+export async function resumoGrid(cortes) {
+  const faixas = cortes.map((c, i) => [i ? String(cortes[i - 1]) : "-inf", c === Infinity ? "+inf" : `(${c}`]);
+  if (emMemoria) {
+    const v = [...mem.placar.values()];
+    return { total: v.length, porFuncao: cortes.map((c, i) => v.filter((ms) => ms < c && (!i || ms >= cortes[i - 1])).length) };
+  }
+  const [total, ...porFuncao] = await pipeline([["ZCARD", CHAVE], ...faixas.map(([a, b]) => ["ZCOUNT", CHAVE, a, b])]);
+  return { total: Number(total), porFuncao: porFuncao.map(Number) };
 }

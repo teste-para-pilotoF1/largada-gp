@@ -291,6 +291,40 @@
 </div>
 
 <script>
+  // ---------- mini analytics (api/evento.js) ----------
+  // Separado do jogo e todo dentro de try: se falhar, o jogo nem percebe. Só manda códigos aleatórios, nada pessoal.
+  (() => {
+    let v = "", novo = false;
+    const id = () => Math.random().toString(36).slice(2, 12).padEnd(10, "0");
+    try { v = localStorage.getItem("sel_v") || ""; } catch {}
+    if (!/^[a-z0-9]{8,16}$/.test(v)) { v = id(); novo = true; try { localStorage.setItem("sel_v", v); } catch {} }
+    const s = id();
+    const enviar = (e, dados) => {
+      try {
+        const corpo = JSON.stringify({ e, v, s, ...dados });
+        if (navigator.sendBeacon && navigator.sendBeacon("/api/evento", new Blob([corpo], { type: "text/plain" }))) return;
+        fetch("/api/evento", { method: "POST", body: corpo, keepalive: true, headers: { "Content-Type": "text/plain" } }).catch(() => {});
+      } catch {}
+    };
+    window.anotar = enviar;
+    let ref = "";
+    try { ref = document.referrer ? new URL(document.referrer).host : ""; } catch {}
+    enviar("entrada", { n: novo, ref });
+    // tempo com a página visível: manda o total da visita sempre que a pessoa sai/troca de app
+    let visivel = document.visibilityState === "visible" ? performance.now() : 0, acumulado = 0, mandado = -1;
+    const fechar = () => {
+      if (visivel) { acumulado += performance.now() - visivel; visivel = 0; }
+      const seg = Math.round(acumulado / 1000);
+      if (seg !== mandado && seg > 0) { mandado = seg; enviar("tempo", { seg: Math.min(seg, 10800) }); }
+    };
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") fechar();
+      else if (!visivel) visivel = performance.now();
+    });
+    addEventListener("pagehide", fechar);
+  })();
+</script>
+<script>
   // ---------- AJUSTE AQUI ----------
   const EQUIPE = "Vórtex";               // nome dado pelo Nando no ep. 2
   const PERFIL = "@formula1explica";      // aparece no card de story
@@ -401,8 +435,10 @@
     rodada = fetch("/api/ranking?rodada=1").then((r) => r.json()).then((j) => j.rodada || null).catch(() => null);
   }
 
+  const marcar = (e, d) => { try { window.anotar && window.anotar(e, d); } catch {} };
+
   function armar() {
-    if (!tempos.length) pedirRodada();
+    if (!tempos.length) { pedirRodada(); marcar("inicio"); }
     $("ver-grid").hidden = true; // o grid só abre fora de uma rodada
     estado = "acendendo";
     luzes(0); zerarTempo();
@@ -466,6 +502,7 @@
   function terminar() {
     estado = "fim"; pintarPips();
     const media = mediaRodada();
+    marcar("rodada", { t: tempos.map((t) => (t.queimou ? 0 : Math.round(t.ms))) }); // 0 = queimou
     const [, nome, tipo, linha] = funcaoDe(media);
     if (media < melhorMedia) { melhorMedia = media; gravar("sel_melhor_media", media); }
     mostrarRecorde(); somFim();
@@ -573,7 +610,9 @@
     cv.toBlob(async (blob) => {
       const arquivo = new File([blob], "seletiva-de-pilotos.png", { type: "image/png" });
       const texto = `Fiz ${fmt(mediaRodada())} s na seletiva de pilotos. A vaga tá aberta: https://${site}`;
-      if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+      const pode = navigator.canShare && navigator.canShare({ files: [arquivo] });
+      marcar("story", { k: pode ? "share" : "imagem" }); // 1 por clique
+      if (pode) {
         try { await navigator.share({ files: [arquivo], text: texto }); return; } catch (e) { if (e.name === "AbortError") return; }
       }
       $("img-compartilhar").src = cv.toDataURL("image/png"); $("img-compartilhar").hidden = false; $("dica-compartilhar").hidden = false;
@@ -633,6 +672,7 @@
       const j = await r.json();
       if (!r.ok) throw new Error(j.erro || "Não deu para salvar.");
       salvo = { insta, ...j };
+      marcar("salvou", { p: j.posicao });
       gravar("sel_insta", insta);
       mostrarForm();
       const v = vaga(j.posicao), corte = 2 + PILOTOS_TESTE;
@@ -652,6 +692,7 @@
     $("g-form").hidden = true; $("g-msg").textContent = "";
     $("placar-voltar").before($("grid"));
     $("placar").hidden = false; $("placar").dataset.volta = deIntro ? "intro" : "";
+    marcar("grid");
     carregarGrid();
   }
   $("intro-placar").addEventListener("click", () => abrirGrid(true));
