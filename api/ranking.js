@@ -6,7 +6,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { anotar, configurado, emMemoria, podeEnviar, remover, salvar, SEGREDO, top, usarRodada } from "./_banco.js";
 
 // Tirados da seletiva: rodadas de robô (5 cliques cravados no limite de 0,100 s). Auditoria em /api/suspeitos.
-const TIRADOS = new Set(["tln_tavares", "iamthereis", "enzomichelin_", "dexsyze", "vitoorg__", "_jlreis", "_jluisreis", "aires_07", "gusta.mcastro"]);
+const TIRADOS = new Set(["tln_tavares", "iamthereis", "enzomichelin_", "dexsyze", "vitoorg__", "_jlreis", "_jluisreis", "aires_07", "gusta.mcastro", "enzo.michelin", "davii.f"]);
 let limpeza = null; // tira do banco uma vez por instância; se falhar, o grid segue normal e tenta de novo no próximo pedido
 const limpar = () => (limpeza ||= remover([...TIRADOS]).catch((e) => { limpeza = null; console.error("limpeza", e); }));
 
