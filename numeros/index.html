@@ -203,18 +203,18 @@
 
   let textoResumo = "";
   function desenhar(d) {
-    $("sub").textContent = d.desde ? `Contando desde ${quando(d.desde)} · atualizado ${quando(d.agora)} · atualiza sozinho a cada minuto` : "Ainda não chegou nenhuma visita.";
+    $("sub").textContent = d.desde ? `Contando desde ${quando(d.desde)} · atualizado ${quando(d.agora)} · aperte F5 para atualizar` : "Ainda não chegou nenhuma visita.";
     const r = d.rodadas, g = d.grid;
     const kpis = [
-      [n(d.pessoas), "pessoas", `${n(d.voltaram)} voltaram depois`],
-      [n(d.visitas), "visitas", d.pessoas ? `${(d.visitas / d.pessoas).toFixed(1).replace(".", ",")} por pessoa` : ""],
-      [seg(d.tempo.medio), "tempo médio no site", `metade ficou mais de ${seg(d.tempo.mediana)}`],
+      [n(d.pessoas), d.pessoas === 1 ? "pessoa" : "pessoas", `${n(d.voltaram)} ${d.voltaram === 1 ? "voltou" : "voltaram"} depois`],
+      [n(d.visitas), d.visitas === 1 ? "visita" : "visitas", d.pessoas ? `${(d.visitas / d.pessoas).toFixed(1).replace(".", ",")} por pessoa` : ""],
+      [seg(d.tempo.medio), "tempo médio no site", d.tempo.mediana ? `metade ficou mais de ${seg(d.tempo.mediana)}` : ""],
       [n(d.tempo.totalHoras) + " h", "de atenção somada", "tempo com o site aberto na tela"],
       [n(r.completas), "rodadas completas", `${n(r.largadas)} largadas`],
       [n(g.inscritos), "@ no grid", "inscritos desde a abertura"],
       [n(d.stories), "cards de story gerados", ""],
       [fmtS(g.lider && g.lider.ms), "melhor média", g.lider ? "@" + g.lider.insta : ""],
-      [fmtS(r.melhorReacao), "melhor largada", `mediana ${fmtS(r.reacaoMediana)}`],
+      [fmtS(r.melhorReacao), "melhor largada", r.reacaoMediana ? `mediana ${fmtS(r.reacaoMediana)}` : ""],
       [pct(r.queimadas, r.largadas), "largadas queimadas", `${n(r.queimadas)} no total`],
     ];
     $("kpis").innerHTML = kpis.map(([v, t, s]) => `<div class="kpi"><b>${v}</b><span>${t}</span>${s ? `<small>${s}</small>` : ""}</div>`).join("");
@@ -223,7 +223,7 @@
     const insta = d.apps.find(([a]) => a === "Instagram");
     textoResumo =
       `Seletiva Vórtex (teste de reflexo da série da equipe dos seguidores, @formula1explica)\n` +
-      `• ${n(d.pessoas)} pessoas e ${n(d.visitas)} visitas${d.desde ? " desde " + quando(d.desde) : ""}\n` +
+      `• ${n(d.pessoas)} ${d.pessoas === 1 ? "pessoa" : "pessoas"} e ${n(d.visitas)} ${d.visitas === 1 ? "visita" : "visitas"}${d.desde ? " desde " + quando(d.desde) : ""}\n` +
       `• ${n(r.completas)} rodadas completas (${n(r.largadas)} largadas) e ${n(g.inscritos)} @ inscritos no grid\n` +
       `• tempo médio no site: ${seg(d.tempo.medio)} (${n(d.tempo.totalHoras)} h de atenção somadas)\n` +
       `• ${n(d.stories)} cards de story gerados para compartilhar` +
@@ -264,6 +264,5 @@
     catch { const s = getSelection(), rg = document.createRange(); rg.selectNodeContents($("resumo")); s.removeAllRanges(); s.addRange(rg); $("copiar").textContent = "Selecionado: copie"; }
     setTimeout(() => { $("copiar").textContent = "Copiar resumo"; }, 2000);
   });
-  carregar();
-  setInterval(carregar, 60_000);
+  carregar(); // só atualiza ao recarregar a página (F5)
 </script>
