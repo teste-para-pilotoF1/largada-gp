@@ -3,7 +3,7 @@
 // GET  /api/ranking?rodada=1  -> { rodada }                      (vale de rodada assinado, pedido ao começar)
 // POST /api/ranking  { insta, tempos: [5 números em ms], rodada } -> { ms, melhor, posicao, top }
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { configurado, emMemoria, podeEnviar, remover, salvar, SEGREDO, top, usarRodada } from "./_banco.js";
+import { anotar, configurado, emMemoria, podeEnviar, remover, salvar, SEGREDO, top, usarRodada } from "./_banco.js";
 
 // Tirados da seletiva: rodadas de robô (5 cliques cravados no limite de 0,100 s). Auditoria em /api/suspeitos.
 const TIRADOS = new Set(["tln_tavares", "iamthereis", "enzomichelin_", "dexsyze", "vitoorg__", "_jlreis", "_jluisreis", "aires_07"]);
@@ -27,11 +27,15 @@ const postadoMs = POSTADO ? Date.parse(/(Z|[+-]\d\d:?\d\d)$/.test(POSTADO) ? POS
 const fimMs = postadoMs + HORAS_ABERTA * 3600 * 1000; // NaN enquanto não postado
 const fechou = () => Number.isFinite(fimMs) && Date.now() > fimMs;
 
-const json = (dados, status = 200) =>
+const json = (dados, status = 200, cache = "no-store") =>
   new Response(JSON.stringify(dados), {
     status,
-    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": cache },
   });
+// o grid lido (GET sem ?rodada) fica guardado na CDN da Vercel: milhares de pessoas, 1 função a cada 10 s.
+// Quem salva recebe o grid fresco na resposta do POST. Depois que a seletiva fecha, nada muda: guarda 1 hora.
+const cacheGrid = () => (emMemoria ? "no-store" : fechou() ? "public, max-age=0, s-maxage=3600" : "public, max-age=0, s-maxage=10, stale-while-revalidate=20");
+const ID = /^[a-z0-9]{8,16}$/;
 
 const indisponivel = () => json({ erro: "O grid ainda não foi ligado (falta o banco Upstash na Vercel)." }, 503);
 
@@ -72,11 +76,16 @@ export async function GET(request) {
   const url = new URL(request.url);
   if (url.searchParams.has("rodada")) {
     const t = String(Date.now());
+    // o mesmo pedido já anota o "começou uma rodada" do analytics (antes era uma chamada a mais por rodada)
+    const v = url.searchParams.get("v"), s = url.searchParams.get("s");
+    if (ID.test(v || "") && ID.test(s || "") && !/bot|crawl|spider|preview|headless/i.test(request.headers.get("user-agent") || "")) {
+      try { await anotar({ e: "inicio", ts: Number(t), v, s }); } catch (e) { console.error("inicio", e); } // nunca atrapalha o vale
+    }
     return json({ rodada: `${t}.${assinar(t)}` });
   }
   try {
     await limpar();
-    return json({ top: await top(TOP), fim: Number.isFinite(fimMs) ? new Date(fimMs).toISOString() : null });
+    return json({ top: await top(TOP), fim: Number.isFinite(fimMs) ? new Date(fimMs).toISOString() : null }, 200, cacheGrid());
   } catch (e) {
     console.error(e);
     return json({ erro: "O grid não está disponível agora." }, 502);

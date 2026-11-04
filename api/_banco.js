@@ -91,9 +91,11 @@ export async function podeEnviar(ip, limite = 30) { // 30: no 4G muita gente sai
 const EVENTOS = "seletiva:ep2:eventos";
 mem.ev = [];
 
-export async function anotar(registro) {
-  if (emMemoria) { mem.ev.push(JSON.stringify(registro)); return; }
-  await pipeline([["RPUSH", EVENTOS, JSON.stringify(registro)]]);
+export async function anotar(registro) { // um registro ou uma lista (lote): sempre 1 comando só
+  const linhas = (Array.isArray(registro) ? registro : [registro]).map((r) => JSON.stringify(r));
+  if (!linhas.length) return;
+  if (emMemoria) { mem.ev.push(...linhas); return; }
+  await pipeline([["RPUSH", EVENTOS, ...linhas]]);
 }
 
 export async function eventos() {

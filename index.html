@@ -299,23 +299,33 @@
     try { v = localStorage.getItem("sel_v") || ""; } catch {}
     if (!/^[a-z0-9]{8,16}$/.test(v)) { v = id(); novo = true; try { localStorage.setItem("sel_v", v); } catch {} }
     const s = id();
-    const enviar = (e, dados) => {
+    window.visita = { v, s }; // o pedido do vale de rodada leva junto e já conta o "começou"
+    const mandar = (lote) => {
       try {
-        const corpo = JSON.stringify({ e, v, s, ...dados });
+        const corpo = JSON.stringify({ v, s, lote });
         if (navigator.sendBeacon && navigator.sendBeacon("/api/evento", new Blob([corpo], { type: "text/plain" }))) return;
         fetch("/api/evento", { method: "POST", body: corpo, keepalive: true, headers: { "Content-Type": "text/plain" } }).catch(() => {});
       } catch {}
     };
-    window.anotar = enviar;
+    // eventos do jogo esperam numa fila e vão juntos (menos chamadas na Vercel):
+    // a cada 4, ou quando a pessoa sai / troca de app. "a" = há quantos ms aconteceu.
+    let fila = [];
+    const despachar = () => {
+      if (!fila.length) return;
+      const agora = performance.now(), lote = fila.map(([e, d, t]) => ({ ...d, e, a: Math.round(agora - t) }));
+      fila = []; mandar(lote);
+    };
+    window.anotar = (e, dados) => { try { fila.push([e, dados || {}, performance.now()]); if (fila.length >= 4) despachar(); } catch {} };
     let ref = "";
     try { ref = document.referrer ? new URL(document.referrer).host : ""; } catch {}
-    enviar("entrada", { n: novo, ref });
+    mandar([{ e: "entrada", n: novo, ref }]); // a entrada vai na hora: conta a visita mesmo de quem sai rápido
     // tempo com a página visível: manda o total da visita sempre que a pessoa sai/troca de app
     let visivel = document.visibilityState === "visible" ? performance.now() : 0, acumulado = 0, mandado = -1;
     const fechar = () => {
       if (visivel) { acumulado += performance.now() - visivel; visivel = 0; }
       const seg = Math.round(acumulado / 1000);
-      if (seg !== mandado && seg > 0) { mandado = seg; enviar("tempo", { seg: Math.min(seg, 10800) }); }
+      if (seg !== mandado && seg > 0) { mandado = seg; fila.push(["tempo", { seg: Math.min(seg, 10800) }, performance.now()]); }
+      despachar();
     };
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") fechar();
@@ -432,13 +442,14 @@
 
   // vale assinado pelo servidor no começo de cada rodada (o grid só aceita rodadas de verdade)
   function pedirRodada() {
-    rodada = fetch("/api/ranking?rodada=1").then((r) => r.json()).then((j) => j.rodada || null).catch(() => null);
+    const w = window.visita, ids = w && w.v && w.s ? `&v=${w.v}&s=${w.s}` : "";
+    rodada = fetch("/api/ranking?rodada=1" + ids).then((r) => r.json()).then((j) => j.rodada || null).catch(() => null);
   }
 
   const marcar = (e, d) => { try { window.anotar && window.anotar(e, d); } catch {} };
 
   function armar() {
-    if (!tempos.length) { pedirRodada(); marcar("inicio"); }
+    if (!tempos.length) pedirRodada(); // o "começou" do analytics vai junto com o vale
     $("ver-grid").hidden = true; // o grid só abre fora de uma rodada
     estado = "acendendo";
     luzes(0); zerarTempo();

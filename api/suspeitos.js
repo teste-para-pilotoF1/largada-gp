@@ -6,7 +6,7 @@ import { configurado, emMemoria, eventos } from "./_banco.js";
 const BRT = -3 * 3600 * 1000;
 const hora = (ts) => new Date(ts + BRT).toISOString().slice(11, 19);
 const json = (dados, status = 200) =>
-  new Response(JSON.stringify(dados), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } });
+  new Response(JSON.stringify(dados), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": status === 200 && !emMemoria ? "public, max-age=0, s-maxage=60" : "no-store", "X-Robots-Tag": "noindex" } });
 const mediana = (v) => { if (!v.length) return null; const s = [...v].sort((a, b) => a - b), m = s.length >> 1; return Math.round(s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2); };
 
 export async function GET(request) {
