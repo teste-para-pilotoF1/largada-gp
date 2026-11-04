@@ -1,0 +1,12 @@
+{
+  "name": "largada-gp",
+  "private": true,
+  "type": "module",
+  "description": "Teste de reflexo da largada da F1, em português. Site estático + uma função (api/ranking.js) na Vercel.",
+  "scripts": {
+    "dev": "node dev.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
