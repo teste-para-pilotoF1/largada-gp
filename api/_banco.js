@@ -27,7 +27,7 @@ async function pipeline(comandos) {
 // ---- memória (só para testar no computador) ----
 const mem = { placar: new Map(), usadas: new Set(), cont: new Map() };
 
-const CHAVE = "seletiva:placar"; // sorted set: membro = @ do Instagram (minúsculo), nota = média em ms
+const CHAVE = "seletiva:ep2:placar"; // sorted set: membro = @ do Instagram (minúsculo), nota = média em ms
 
 export async function top(n) {
   if (emMemoria) {

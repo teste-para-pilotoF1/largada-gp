@@ -7,7 +7,7 @@ import { configurado, emMemoria, podeEnviar, salvar, SEGREDO, top, usarRodada } 
 
 // ---- AJUSTE AQUI: hora em que o ep. 2 foi postado (horário de Brasília), ex. "2026-11-10T18:00".
 // A seletiva fecha 24 h depois. "" = ainda não postado (sem prazo).
-const POSTADO = process.env.SELETIVA_POSTADO || "";
+const POSTADO = process.env.SELETIVA_POSTADO || "2026-11-04T10:05";
 const HORAS_ABERTA = 24;
 
 const TOP = 20;
