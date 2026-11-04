@@ -303,9 +303,12 @@
     const capacete = `<polygon points="60,12 90,24 104,54 98,88 74,104 46,104 22,88 16,54 30,24" fill="#f2f2f5"/><polygon points="60,12 90,24 104,54 98,88 74,104 60,58" fill="#000" opacity=".09"/><rect x="24" y="48" width="72" height="28" rx="12" fill="#0b0b10"/><circle cx="44" cy="58" r="2" fill="#fff" opacity=".85"/><circle cx="72" cy="60" r="1.6" fill="#ff9fd0" opacity=".9"/><polygon points="56,12 64,12 66,48 54,48" fill="#d7191f"/><rect x="50" y="94" width="20" height="6" fill="#ffd84d"/>`;
     const pneu = `<circle cx="34" cy="118" r="20" fill="#1b1b22"/><circle cx="34" cy="118" r="9" fill="#d7191f"/>`;
     const lanterna = `<polygon points="98,108 160,80 160,140" fill="#ffd84d" opacity=".55"/><rect x="84" y="104" width="18" height="10" rx="3" fill="#3a3d45"/>`;
+    const caixa = `<rect x="10" y="108" width="40" height="26" rx="3" fill="#d7191f"/><rect x="10" y="108" width="40" height="7" fill="#b3141a"/><path d="M22 108 v-7 h16 v7" stroke="#3a3d45" stroke-width="4" fill="none"/>`;
+    const celular = `<rect x="80" y="96" width="22" height="38" rx="4" fill="#1b1b22"/><rect x="83" y="100" width="16" height="28" rx="2" fill="#4a90e2"/><polygon points="88,108 95,114 88,120" fill="#fff"/>`;
+    const extras = { roda: [lanterna, ""], pneu: ["", pneu], caixa: ["", caixa], celular: ["", celular] }[tipo] || ["", ""];
     let partes = corpo;
     if (tipo === "capacete") partes += capacete;
-    else partes += cabeca + rosto + (tipo === "roda" ? lanterna : "") + bone + (tipo === "pneu" ? pneu : "");
+    else partes += cabeca + rosto + extras[0] + bone + extras[1];
     return `<svg class="avatar" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Boneco da equipe">${partes}</svg>`;
   }
   $("intro-avatar").innerHTML = avatar("capacete");
@@ -435,11 +438,14 @@
   }
 
   // função na equipe pelo tempo (os mesmos cortes colorem o grid)
+  // [média abaixo de (ms), função, boneco, frase]
   const FUNCOES = [
-    [200, "Piloto", "capacete", "Reflexo de pole. Entra no grid e segura essa vaga."],
-    [250, "Piloto de teste", "capacete", "Rápido o bastante para andar no kart. Falta pouco para a vaga de titular."],
-    [300, "Mecânico", "bone", "Mão rápida na chave de roda. O volante ainda pede um pouco mais."],
-    [380, "Equipe de pneus", "pneu", "Ninguém troca pneu murcho como você."],
+    [220, "Piloto", "capacete", "Reflexo de pole. Entra no grid e segura essa vaga."],
+    [259, "Piloto de teste", "capacete", "Rápido o bastante para andar no kart. Falta pouco para a vaga de titular."],
+    [319, "Pit stop", "pneu", "Ninguém troca pneu tão rápido quanto você."],
+    [400, "Mecânico", "bone", "Mão boa na chave de roda. O volante ainda pede um pouco mais."],
+    [479, "Auxiliar de equipe", "caixa", "Sem você nada sai da garagem. O volante ainda está longe."],
+    [515, "Equipe de marketing", "celular", "Reflexo de story: posta o resultado e chama a galera."],
     [Infinity, "Buscar a roda", "roda", "Leva uma lanterna. O Rui também foi e não voltou."],
   ];
   const funcaoDe = (ms) => FUNCOES.find((f) => ms < f[0]);
@@ -588,7 +594,7 @@
       const selo = document.createElement("span");
       if (i < corte) { selo.className = "selo" + (i < 2 ? "" : " t"); selo.textContent = i === 0 ? "P1" : i === 1 ? "P2" : "TESTE"; }
       const ms = document.createElement("span"); ms.className = "ms"; ms.textContent = fmt(r.ms);
-      ms.style.color = `var(--${r.ms < 200 ? "roxo" : r.ms < 250 ? "verde" : "amarelo"})`;
+      ms.style.color = `var(--${r.ms < FUNCOES[0][0] ? "roxo" : r.ms < FUNCOES[1][0] ? "verde" : "amarelo"})`; // piloto, piloto de teste, resto
       li.append(ig, selo, ms); ol.append(li);
     });
     if (!top.length && !$("g-msg").textContent) $("g-msg").textContent = "O grid está vazio. A vaga de Piloto 1 é sua se você entrar agora.";
