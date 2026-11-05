@@ -151,8 +151,11 @@
   .g-form label:focus-within { border-color: var(--vermelho); }
   .g-msg { font-size: 14px; color: var(--card-apagado); margin: 0; line-height: 1.35; }
   .g-msg:empty { display: none; }
-  .g-trocar { align-self: flex-start; font: inherit; font-size: 13px; font-weight: 800; color: var(--card-apagado); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
-  .g-trocar[hidden] { display: none; }
+  .g-trocar { justify-self: start; font: inherit; font-size: 13px; font-weight: 800; color: var(--card-apagado); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  .g-salvar-box { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .g-salvar-box.card { padding: 14px 18px; }
+  .g-salvar-box.card .g-msg { color: var(--card-ink); font-weight: 800; }
+  .g-salvar-box:has(#g-form[hidden]):has(#g-trocar[hidden]):has(#g-msg:empty) { display: none; }
   .g-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: pos; }
   .g-lista li { counter-increment: pos; display: grid; grid-template-columns: 2.5em minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; }
   .g-lista li::before { content: counter(pos) "º"; font-size: 14px; font-weight: 900; color: var(--card-apagado); font-variant-numeric: tabular-nums; }
@@ -247,12 +250,14 @@
         <h3>Quem pilota a gente?</h3>
         <div class="vagas"><span class="tag">1º Piloto 1</span><span class="tag">2º Piloto 2</span><span class="tag azul" id="vaga-teste">3º ao 5º Teste</span></div>
         <p class="prazo" id="prazo"></p>
-        <form class="g-form" id="g-form" hidden>
-          <label><span>@</span><input id="g-insta" maxlength="31" placeholder="seu Instagram" autocomplete="username" autocapitalize="off" spellcheck="false" aria-label="Seu @ do Instagram" required></label>
-          <button class="pilula primaria" id="g-salvar" type="submit" style="flex:0 0 auto">Entrar</button>
-        </form>
-        <p class="g-msg" id="g-msg"></p>
-        <button class="g-trocar" id="g-trocar" type="button" hidden>Trocar o @</button>
+        <div class="g-salvar-box" id="salvar-box">
+          <p class="g-msg" id="g-msg"></p>
+          <form class="g-form" id="g-form" hidden>
+            <label><span>@</span><input id="g-insta" maxlength="31" placeholder="seu Instagram" autocomplete="username" autocapitalize="off" spellcheck="false" aria-label="Seu @ do Instagram" required></label>
+            <button class="pilula primaria" id="g-salvar" type="submit" style="flex:0 0 auto">Entrar</button>
+          </form>
+          <button class="g-trocar" id="g-trocar" type="button" hidden>Trocar o @</button>
+        </div>
         <ol class="g-lista" id="g-lista"></ol>
       </div>
     </section>
@@ -532,6 +537,7 @@
     $("img-compartilhar").hidden = $("dica-compartilhar").hidden = true;
     salvo = null; atual = null;
     $("resultado").append($("grid"));
+    $("grid").before($("salvar-box")); $("salvar-box").classList.add("card"); // logo abaixo do tempo: sem rolar a tela
     mostrarForm();
     $("g-salvar").disabled = false;
     $("g-msg").textContent = "";
@@ -762,6 +768,7 @@
     if (deIntro) $("intro").hidden = true;
     $("g-form").hidden = true; $("g-trocar").hidden = true; $("g-msg").textContent = "";
     $("placar-voltar").before($("grid"));
+    $("g-lista").before($("salvar-box")); $("salvar-box").classList.remove("card");
     $("placar").hidden = false; $("placar").dataset.volta = deIntro ? "intro" : "";
     marcar("grid");
     carregarGrid();
