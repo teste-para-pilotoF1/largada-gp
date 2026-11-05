@@ -7,8 +7,10 @@ import { anotar, configurado, emMemoria, podeEnviar, remover, salvar, SEGREDO, t
 
 // Tirados da seletiva: rodadas de robô (5 cliques cravados no limite de 0,100 s). Auditoria em /api/suspeitos.
 const TIRADOS = new Set(["tln_tavares", "iamthereis", "enzomichelin_", "dexsyze", "vitoorg__", "_jlreis", "_jluisreis", "aires_07", "gusta.mcastro", "enzo.michelin", "davii.f", "abelsevroc", "vinizzxx_", "teste_probe"]);
-let limpeza = null; // tira do banco uma vez por instância; se falhar, o grid segue normal e tenta de novo no próximo pedido
-const limpar = () => (limpeza ||= remover([...TIRADOS]).catch((e) => { limpeza = null; console.error("limpeza", e); }));
+// Entradas feitas à mão a pedido do Diego (média em ms). Se a pessoa fizer melhor no site, vale o melhor (ZADD LT).
+const ADICIONADOS = { o_telex01: 149 };
+let limpeza = null; // acerta o banco uma vez por instância; se falhar, o grid segue normal e tenta de novo no próximo pedido
+const limpar = () => (limpeza ||= Promise.all([remover([...TIRADOS]), ...Object.entries(ADICIONADOS).map(([insta, ms]) => salvar(insta, ms))]).catch((e) => { limpeza = null; console.error("limpeza", e); }));
 
 // ---- AJUSTE AQUI: hora em que o ep. 2 foi postado (horário de Brasília), ex. "2026-11-10T18:00".
 // A seletiva fecha 24 h depois. "" = ainda não postado (sem prazo).

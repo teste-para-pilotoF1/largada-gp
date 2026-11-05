@@ -151,6 +151,8 @@
   .g-form label:focus-within { border-color: var(--vermelho); }
   .g-msg { font-size: 14px; color: var(--card-apagado); margin: 0; line-height: 1.35; }
   .g-msg:empty { display: none; }
+  .g-trocar { align-self: flex-start; font: inherit; font-size: 13px; font-weight: 800; color: var(--card-apagado); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+  .g-trocar[hidden] { display: none; }
   .g-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: pos; }
   .g-lista li { counter-increment: pos; display: grid; grid-template-columns: 2.5em minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; }
   .g-lista li::before { content: counter(pos) "º"; font-size: 14px; font-weight: 900; color: var(--card-apagado); font-variant-numeric: tabular-nums; }
@@ -250,6 +252,7 @@
           <button class="pilula primaria" id="g-salvar" type="submit" style="flex:0 0 auto">Entrar</button>
         </form>
         <p class="g-msg" id="g-msg"></p>
+        <button class="g-trocar" id="g-trocar" type="button" hidden>Trocar o @</button>
         <ol class="g-lista" id="g-lista"></ol>
       </div>
     </section>
@@ -527,12 +530,12 @@
     $("voltas").innerHTML = tempos.map((t, i) =>
       `<div class="volta" data-faixa="${t.queimou ? "queimou" : t.ms === maisRapida ? "roxo" : ""}"><span>L${i + 1}</span>${t.queimou ? "QUEIMOU" : fmt(t.ms)}</div>`).join("");
     $("img-compartilhar").hidden = $("dica-compartilhar").hidden = true;
-    salvo = null;
+    salvo = null; atual = null;
     $("resultado").append($("grid"));
     mostrarForm();
     $("g-salvar").disabled = false;
     $("g-msg").textContent = "";
-    carregarGrid();
+    rodadaPronta = fecharRodada(media, carregarGrid());
     $("resultado").hidden = false; $("resultado").scrollTop = 0;
     $("recorde").hidden = true; $("ver-grid").hidden = true;
     $("compartilhar").hidden = $("denovo").hidden = false;
@@ -633,10 +636,79 @@
 
   // ---------- grid da seletiva (api/ranking.js) ----------
   const API = "/api/ranking";
-  let salvo = null, fim = null;
+  let salvo = null, fim = null, trocando = false, atual = null, rodadaPronta = null;
+  let meuInsta = "", melhorSalvo = ler("sel_salvo"); // o @ de quem já entrou no grid e a melhor média que o servidor guardou
+  try { meuInsta = localStorage.getItem("sel_insta") || ""; } catch {}
   const vaga = (pos) => pos === 1 ? "Piloto 1" : pos === 2 ? "Piloto 2" : pos <= 2 + PILOTOS_TESTE ? "piloto de teste" : null;
   const fechada = () => !!fim && Date.now() > Date.parse(fim);
-  function mostrarForm() { $("g-form").hidden = fechada() || estado !== "fim" || !!salvo; }
+  function mostrarForm() {
+    const aberto = !fechada() && estado === "fim";
+    $("g-form").hidden = !aberto || !!salvo || (!!meuInsta && !trocando);
+    $("g-trocar").hidden = !aberto || !meuInsta || trocando;
+  }
+
+  // a melhor rodada ainda não salva fica guardada (o vale dura 2 horas no servidor):
+  // quem faz um tempo bom, joga de novo e só salva depois não perde o tempo bom, mesmo se sair do site
+  const VALE_DURA = 115 * 60 * 1000;
+  let pendente = null;
+  try { pendente = JSON.parse(localStorage.getItem("sel_pendente")); } catch {}
+  const pendenteValida = () => !!pendente && typeof pendente.vale === "string" && Array.isArray(pendente.tempos) && Date.now() - Number(pendente.vale.split(".")[0]) < VALE_DURA;
+  function guardarPendente(p) {
+    pendente = p;
+    try { if (p) localStorage.setItem("sel_pendente", JSON.stringify(p)); else localStorage.removeItem("sel_pendente"); } catch {}
+  }
+
+  // fim da rodada: guarda se foi a melhor e, para quem já tem @, salva sozinho quando bate o próprio recorde
+  async function fecharRodada(media, gridCarregado) {
+    const feitos = tempos.map((t) => Math.round(t.ms)), m = Math.round(media);
+    const [vale] = await Promise.all([rodada, gridCarregado]);
+    if (!vale || fechada()) return;
+    atual = { vale, tempos: feitos, media: m };
+    if (!pendenteValida() || m < pendente.media) guardarPendente(atual);
+    if (trocando) return;
+    if (!meuInsta) { $("g-msg").textContent = `Coloque seu @ uma vez e sua melhor média (${fmt(pendente.media)} s) entra no grid. Depois, seus recordes salvam sozinhos.`; return; }
+    if (pendente.media < melhorSalvo) return enviar(meuInsta, true);
+    $("g-msg").textContent = `@${meuInsta} segue no grid com ${fmt(melhorSalvo)} s. Quando você bater esse tempo, ele salva sozinho.`;
+  }
+
+  async function enviar(insta, auto) {
+    const btn = $("g-salvar");
+    btn.disabled = true; $("g-msg").textContent = auto ? "Novo recorde! Salvando no grid…" : "Entrando no grid…";
+    try {
+      // primeiro a melhor rodada guardada; se o servidor recusar, tenta a rodada que acabou de terminar
+      const fila = [pendenteValida() ? pendente : null, atual].filter((x, i, a) => x && a.findIndex((y) => y && y.vale === x.vale) === i);
+      if (!fila.length) throw new Error("Não deu para validar a rodada. Confira a internet e faça outra.");
+      let j = null, erro = "";
+      for (const p of fila) {
+        const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ insta, rodada: p.vale, tempos: p.tempos }) });
+        const resposta = await r.json();
+        if (r.ok) { j = resposta; break; }
+        erro = resposta.erro || "Não deu para salvar.";
+        if (![400, 403, 409].includes(r.status)) throw new Error(erro); // queda ou limite: a rodada continua guardada
+        if (pendente && p.vale === pendente.vale) guardarPendente(null); // o servidor não vai aceitar essa rodada
+      }
+      if (!j) throw new Error(erro);
+      guardarPendente(null);
+      salvo = { insta, ...j }; meuInsta = insta; melhorSalvo = j.melhor; trocando = false;
+      gravar("sel_insta", insta); gravar("sel_salvo", j.melhor);
+      marcar("salvou", { p: j.posicao });
+      mostrarForm();
+      const v = vaga(j.posicao), corte = 2 + PILOTOS_TESTE;
+      const inicio = auto ? "Salvo sozinho: " : "";
+      const melhorou = j.melhor === j.ms ? "" : ` Sua melhor média continua ${fmt(j.melhor)} s.`;
+      const outra = atual && j.ms < atual.media ? ` Salvamos sua melhor rodada (${fmt(j.ms)} s), não a última.` : "";
+      if (v) $("g-msg").textContent = `${inicio}@${insta} está em ${j.posicao}º: hoje seria ${v}.${melhorou}${outra}`;
+      else {
+        const alvo = j.top[corte - 1];
+        $("g-msg").textContent = `${inicio}@${insta} está em ${j.posicao}º.${melhorou}${outra}` + (alvo ? ` Para virar piloto de teste, faça abaixo de ${fmt(alvo.ms)} s.` : "");
+      }
+      desenharGrid(j.top, insta);
+    } catch (err) {
+      const msg = err.message || "Não deu para salvar.";
+      $("g-msg").textContent = auto && pendenteValida() ? `${msg} Seu recorde ficou guardado e tentamos de novo na próxima rodada.` : msg;
+      btn.disabled = false;
+    }
+  }
 
   function pintarPrazo() {
     if (!fim) { $("prazo").textContent = "A seletiva fica aberta por 24 horas depois que o ep. 2 sair. Salve sua melhor média até lá."; return; }
@@ -666,41 +738,29 @@
       const r = await fetch(API), j = await r.json();
       if (!r.ok) throw new Error(j.erro);
       fim = j.fim; pintarPrazo(); mostrarForm();
-      desenharGrid(j.top, salvo && salvo.insta);
+      desenharGrid(j.top, salvo ? salvo.insta : meuInsta);
     } catch (e) { $("g-msg").textContent = "O grid não está disponível agora."; }
   }
 
-  try { $("g-insta").value = localStorage.getItem("sel_insta") || ""; } catch {}
+  $("g-insta").value = meuInsta;
   $("g-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const insta = $("g-insta").value.trim().replace(/^@+/, "").toLowerCase(), btn = $("g-salvar");
-    if (!/^[a-z0-9._]{1,30}$/.test(insta)) { $("g-msg").textContent = "Use só letras, números, ponto e _ (como no Instagram)."; return; }
-    btn.disabled = true; $("g-msg").textContent = "Entrando no grid…";
-    try {
-      const vale = await rodada;
-      if (!vale) throw new Error("Não deu para validar a rodada. Confira a internet e faça outra.");
-      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ insta, rodada: vale, tempos: tempos.map((t) => Math.round(t.ms)) }) });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.erro || "Não deu para salvar.");
-      salvo = { insta, ...j };
-      marcar("salvou", { p: j.posicao });
-      gravar("sel_insta", insta);
-      mostrarForm();
-      const v = vaga(j.posicao), corte = 2 + PILOTOS_TESTE;
-      const melhorou = j.melhor === j.ms ? "" : ` Sua melhor média continua ${fmt(j.melhor)} s.`;
-      if (v) $("g-msg").textContent = `@${insta} está em ${j.posicao}º: hoje seria ${v}.${melhorou}`;
-      else {
-        const alvo = j.top[corte - 1];
-        $("g-msg").textContent = `@${insta} está em ${j.posicao}º.${melhorou}` + (alvo ? ` Para virar piloto de teste, faça abaixo de ${fmt(alvo.ms)} s.` : "");
-      }
-      desenharGrid(j.top, insta);
-    } catch (err) { $("g-msg").textContent = err.message || "Não deu para salvar."; btn.disabled = false; }
+    const insta = $("g-insta").value.trim().replace(/^@+/, "").toLowerCase();
+    if (!/^[a-z0-9._]{1,30}$/.test(insta) || /^\.|\.$|\.\./.test(insta)) { $("g-msg").textContent = "Use só letras, números, ponto e _ (como no Instagram)."; return; }
+    $("g-salvar").disabled = true;
+    await rodadaPronta; // a rodada que acabou precisa estar guardada antes de enviar
+    enviar(insta, false);
+  });
+  $("g-trocar").addEventListener("click", () => {
+    trocando = true; salvo = null;
+    $("g-salvar").disabled = false; $("g-msg").textContent = "";
+    mostrarForm(); $("g-insta").focus(); $("g-insta").select();
   });
 
   // grid em tela cheia: abre da tela inicial ou pelo botão do rodapé (fora de uma rodada)
   function abrirGrid(deIntro) {
     if (deIntro) $("intro").hidden = true;
-    $("g-form").hidden = true; $("g-msg").textContent = "";
+    $("g-form").hidden = true; $("g-trocar").hidden = true; $("g-msg").textContent = "";
     $("placar-voltar").before($("grid"));
     $("placar").hidden = false; $("placar").dataset.volta = deIntro ? "intro" : "";
     marcar("grid");

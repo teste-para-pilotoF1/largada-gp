@@ -24,7 +24,10 @@ do quadro escuro. Abaixo de 100 ms ou com luz acesa = largada queimada (vale 1 s
 ## Como o grid se protege
 - Ao começar a rodada o site pede um "vale" assinado ao servidor; o grid só aceita a rodada com esse vale, uma vez só,
   e só se passou o tempo mínimo das luzes (5 s por largada não queimada) e no máximo 2 horas.
-- Cada @ guarda só a melhor média; 8 envios por minuto por IP.
+- Cada @ guarda só a melhor média; 30 envios por minuto por IP.
+- Salvamento automático: depois que a pessoa entra com o @ uma vez, toda rodada que bate o recorde dela vai sozinha para o grid.
+  A melhor rodada ainda não salva fica no aparelho (`sel_pendente`) enquanto o vale dura; ao entrar, vai ela, não a última.
+- Entrada à mão: `ADICIONADOS` em `api/ranking.js` (`@: média em ms`). Grava no próximo pedido depois do deploy, sem passar pelas regras anti-robô.
 - Isso barra quem tenta mandar tempo direto pela API, mas não um robô feito sob medida: antes de anunciar,
   vale pedir aos primeiros um vídeo da tela fazendo o teste (a regra já está escrita no site).
 
