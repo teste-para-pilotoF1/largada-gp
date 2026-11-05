@@ -75,6 +75,11 @@
       <div class="grafico" id="horas"></div>
     </section>
 
+    <section class="card largo">
+      <h2>Visitas por dia (Brasília)</h2>
+      <div class="grafico" id="dias"></div>
+    </section>
+
     <section class="card">
       <h2>Do clique ao story</h2>
       <ul class="lista" id="funil"></ul>
@@ -201,6 +206,21 @@
     });
   }
 
+  // soma as horas de cada dia (o horário já vem em Brasília) e completa os dias sem visita
+  function preencherDias(porHora) {
+    if (!porHora.length) return colunas("dias", [], {});
+    const mapa = new Map();
+    for (const [h, v] of porHora) mapa.set(h.slice(0, 10), (mapa.get(h.slice(0, 10)) || 0) + v);
+    const pts = [], ini = Date.parse(porHora[0][0].slice(0, 10) + "T00:00:00Z"), fim = Date.parse(porHora[porHora.length - 1][0].slice(0, 10) + "T00:00:00Z");
+    for (let t = ini; t <= fim; t += 86400e3) { const k = new Date(t).toISOString().slice(0, 10); pts.push([k, mapa.get(k) || 0]); }
+    const data = (k) => `${k.slice(8, 10)}/${k.slice(5, 7)}`;
+    colunas("dias", pts, {
+      cada: Math.max(1, Math.ceil(pts.length / 8)),
+      rotulo: (k) => (pts.length <= 8 ? `${data(k)} · ${n(mapa.get(k) || 0)}` : data(k)), // poucos dias: o número já aparece, sem precisar tocar
+      dica: (k, v) => `${data(k)} · ${n(v)} visita${v === 1 ? "" : "s"}`,
+    });
+  }
+
   let textoResumo = "";
   function desenhar(d) {
     $("sub").textContent = d.desde ? `Contando desde ${quando(d.desde)} · atualizado ${quando(d.agora)} · aperte F5 para atualizar` : "Ainda não chegou nenhuma visita.";
@@ -232,6 +252,7 @@
     $("resumo").textContent = textoResumo;
 
     preencherHoras(d.porHora);
+    preencherDias(d.porHora);
     const abriu = d.funil[0][1];
     lista("funil", d.funil, { total: abriu });
     lista("estados", d.estados, { nome: (u) => UF[u] || u || "Desconhecido" });
